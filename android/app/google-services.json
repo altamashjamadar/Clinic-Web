@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277481522419",
+    "project_id": "rns-healthcare",
+    "storage_bucket": "rns-healthcare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277481522419:android:98ae44b2309e86ad426386",
+        "android_client_info": {
+          "package_name": "com.example.rns_herbals_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABj4J7zZIyNNV78hOJ_pQqh0P71L649M8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
