@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -44,23 +46,36 @@ class _SignupPageState extends State<SignupPage> {
       // 3. Send verification email
       await cred.user!.sendEmailVerification();
 
-      Get.snackbar(
-        'Check Your Email',
-        'Verification link sent to ${_emailController.text}',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 6),
-      );
-
+      // Get.snackbar(
+      //   'Check Your Email',
+      //   'Verification link sent to ${_emailController.text}',
+      //   backgroundColor: Colors.orange,
+      //   colorText: Colors.white,
+      //   duration: const Duration(seconds: 6),
+      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Verification link sent to ${_emailController.text}'),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 6),
+        ),
+      );  
       // 4. Go to verification screen
       Get.offAll(() => VerifyEmailScreen(user: cred.user!));
     } on FirebaseAuthException catch (e) {
       String msg = 'Signup failed';
       if (e.code == 'weak-password') msg = 'Password too weak';
       if (e.code == 'email-already-in-use') msg = 'Email already registered';
-      Get.snackbar('Error', msg);
+      // Get.snackbar('Error', msg);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content:  Text(msg)),
+      );
     } catch (e) {
-      Get.snackbar('Error', 'Something went wrong');
+      // Get.snackbar('Error', 'Something went wrong');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content:  const Text('Something went wrong')),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -78,29 +93,69 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up,')
+      appBar: AppBar(title: const Text('Sign Up',style: TextStyle(color: Colors.white),),
+      backgroundColor: Colors.blue  ,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/logo.jpeg'),
+              fit: BoxFit.cover,
+              opacity: 0.1,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(controller: _nameController, decoration: const InputDecoration(labelText: 'Full Name *'), validator: (v) => v!.isEmpty ? 'Required' : null),
+               Image.asset('assets/images/pic1.png', height: 250),
+                const SizedBox(height: 30),
+
+             CustomTextField(model: FormFieldModel(label: 'Full Name', hint: 'Please Enter Full Name',prefixIcon: Icons.person,required: true), controller: _nameController),
+              // TextFormField(controller: _nameController, decoration: const InputDecoration(labelText: 'Full Name *'), validator: (v) => v!.isEmpty ? 'Required' : null),
               const SizedBox(height: 16),
-              TextFormField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone *'), keyboardType: TextInputType.phone, validator: (v) => v!.length != 10 ? '10 digits' : null),
+              CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter Phone number",prefixIcon: Icons.phone,required: true), controller: _phoneController),
+              // TextFormField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone *'), keyboardType: TextInputType.phone, validator: (v) => v!.length != 10 ? '10 digits' : null),
               const SizedBox(height: 16),
-              TextFormField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email *'), keyboardType: TextInputType.emailAddress, validator: (v) => !GetUtils.isEmail(v!) ? 'Invalid email' : null),
+              CustomTextField(model: FormFieldModel(label: 'Email', hint: 'Please Enter Email', keyboardType: TextInputType.emailAddress,prefixIcon: Icons.mail,required: true), controller: _emailController),
+              // TextFormField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email *'), keyboardType: TextInputType.emailAddress, validator: (v) => !GetUtils.isEmail(v!) ? 'Invalid email' : null),
               const SizedBox(height: 16),
-              TextFormField(controller: _passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Password *'), validator: (v) => v!.length < 6 ? 'Min 6 chars' : null),
+              CustomTextField(model: FormFieldModel(label: 'Password', hint: 'Enter Your password', fieldType: FieldType.password, required: true,prefixIcon: Icons.lock), controller: _passwordController, showPasswordToggle: true,),
+              // TextFormField(controller: _passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Password *'), validator: (v) => v!.length < 6 ? 'Min 6 chars' : null),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _signup,
-                child: _isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
-              ),
+              // ElevatedButton(
+              //   onPressed: _isLoading ? null : _signup,
+              //   child: _isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
+              // ),
+
+               SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                    ),
+                    onPressed: _isLoading ? null : _signup,
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -144,11 +199,19 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     await widget.user.reload();
     if (widget.user.emailVerified) {
       Get.offAllNamed('/home');
-      Get.snackbar(
-        'Verified!',
-        'Welcome to RNS HealthCare 🎉',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+      // Get.snackbar(
+      //   'Verified!',
+      //   'Welcome to RNS HealthCare 🎉',
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Welcome to RNS HealthCare 🎉'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 5),
+        ),
       );
     }
   }
@@ -163,13 +226,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
 
     await widget.user.sendEmailVerification();
 
-    Get.snackbar(
-      'Sent!',
-      'Verification email sent again',
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
+    // Get.snackbar(
+    //   'Sent!',
+    //   'Verification email sent again',
+    //   backgroundColor: Colors.blue,
+    //   colorText: Colors.white,
+    // );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Verification email sent again'),
+        backgroundColor: Colors.blue,
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 4),
+      ),
     );
-
     // Start countdown
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdown == 0) {
@@ -297,3 +367,4 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     );
   }
 }
+

@@ -12,6 +12,7 @@ class CampsPage extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Upcoming Camps'),
+        centerTitle: true,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),

@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class ProfileScreen extends StatefulWidget {
@@ -106,17 +108,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'profileImage': url,
       });
 
-      Get.snackbar('Success', 'Profile picture updated!', backgroundColor: Colors.green, colorText: Colors.white);
+      // Get.snackbar('Success', 'Profile picture updated!', backgroundColor: Colors.green, colorText: Colors.white)
+      // ;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile picture updated!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 3),
+        ),
+      );
     } catch (e) {
       print('Upload error: $e');  // Check this log
-      Get.snackbar('Error', 'Upload failed: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      // Get.snackbar('Error', 'Upload failed: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Upload failed: $e'),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5)
+        ),
+      );
       setState(() => _uploading = false);
     }
   }
 
   Future<void> _saveProfile() async {
     if (_user == null) {
-      Get.snackbar('Error', 'Login required');
+      // Get.snackbar('Error', 'Login required');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login required')),
+      );
       return;
     }
 
@@ -125,13 +146,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Password optional
     if (_passwordController.text.isNotEmpty) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        Get.snackbar('Error', 'Passwords do not match');
+        // Get.snackbar('Error', 'Passwords do not match');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Passwords do not match')),
+        );
         return;
       }
       try {
         await _user!.updatePassword(_passwordController.text);
       } catch (e) {
-        Get.snackbar('Error', 'Password update failed. Re-login required.');
+        // Get.snackbar('Error', 'Password update failed. Re-login required.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password update failed. Re-login required.')),
+        );
         return;
       }
     }
@@ -145,9 +172,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
-      Get.snackbar('Success', 'Profile updated!', backgroundColor: Colors.green, colorText: Colors.white);
+      // Get.snackbar('Success', 'Profile updated!', backgroundColor: Colors.green, colorText: Colors.white);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile updated!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 3),
+        ),
+      );
     } catch (e) {
-      Get.snackbar('Error', 'Update failed: $e');
+      // Get.snackbar('Error', 'Update failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Update failed: $e'),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5)
+        ),
+      );
     }
   }
 
@@ -160,6 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -169,48 +212,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             children: [
               // Profile Image
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.blue.shade100,
-                    child: _uploading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : _profileImageUrl != null && _profileImageUrl!.isNotEmpty
-                            ? ClipOval(child: Image.network(_profileImageUrl!, width: 120, height: 120, fit: BoxFit.cover))
-                            : const Icon(Icons.person, size: 60, color: Colors.white),
-                  ),
-                  if (!isGuest)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _showImageSourceDialog,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+              // Stack(
+              //   children: [
+              //     CircleAvatar(
+              //       radius: 60,
+              //       backgroundColor: Colors.blue.shade100,
+              //       child: _uploading
+              //           ? const CircularProgressIndicator(color: Colors.white)
+              //           : _profileImageUrl != null && _profileImageUrl!.isNotEmpty
+              //               ? ClipOval(child: Image.network(_profileImageUrl!, width: 120, height: 120, fit: BoxFit.cover))
+              //               : const Icon(Icons.person, size: 60, color: Colors.white),
+              //     ),
+              //     if (!isGuest)
+              //       Positioned(
+              //         bottom: 0,
+              //         right: 0,
+              //         child: GestureDetector(
+              //           onTap: _showImageSourceDialog,
+              //           child: Container(
+              //             padding: const EdgeInsets.all(8),
+              //             decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
+              //             child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+              //           ),
+              //         ),
+              //       ),
+              //   ],
+              // ),
               const SizedBox(height: 30),
 
               // Form Fields
-              _buildTextField(_nameController, 'Full Name', Icons.person, enabled: !isGuest),
+              CustomTextField(model: FormFieldModel(label: "Full name", hint: "Enter ful name",prefixIcon: Icons.person), controller: _nameController),
+              // _buildTextField(_nameController, 'Full Name', Icons.person, enabled: !isGuest),
               const SizedBox(height: 12),
-              _buildTextField(_phoneController, 'Phone', Icons.phone, enabled: !isGuest),
+
+              // _buildTextField(_phoneController, 'Phone', Icons.phone, enabled: !isGuest),
+              CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter phone number",prefixIcon: Icons.phone), controller: _phoneController),
               const SizedBox(height: 12),
               _buildGenderDropdown(enabled: !isGuest),
               const SizedBox(height: 12),
-              _buildTextField(null, 'Email', Icons.email, initialValue: _user?.email ?? 'guest@example.com', enabled: false),
+              // _buildTextField(null, 'Email', Icons.email, initialValue: _user?.email ?? 'guest@example.com', enabled: false),
+              CustomTextField(model: FormFieldModel(label: "Email", hint: "Enter email",prefixIcon: Icons.mail), controller: TextEditingController(text: _user?.email ?? 'guest@example.com', ), ),
               const SizedBox(height: 12),
-              _buildTextField(_addressController, 'Address', Icons.home, enabled: !isGuest, maxLines: 2),
+              // _buildTextField(_addressController, 'Address', Icons.home, enabled: !isGuest, maxLines: 2),
+              CustomTextField(model: FormFieldModel(label: "Address", hint: "Enter address", prefixIcon: Icons.home, maxLines: 2
+              ), controller: _addressController),
               const SizedBox(height: 12),
-              _buildTextField(_passwordController, 'New Password (Optional)', Icons.lock, obscure: true, enabled: !isGuest),
+              
+              // _buildTextField(_passwordController, 'New Password (Optional)', Icons.lock, obscure: true, enabled: !isGuest),
+              CustomTextField(model: FormFieldModel(label: "New Password (Optional)", hint: "Enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _passwordController),
               const SizedBox(height: 12),
-              _buildTextField(_confirmPasswordController, 'Confirm Current Password', Icons.lock, obscure: true, enabled: !isGuest),
+              // _buildTextField(_confirmPasswordController, 'Confirm Current Password', Icons.lock, obscure: true, enabled: !isGuest),
+              CustomTextField(model: FormFieldModel(label: "Confirm Current Password", hint: "Re-enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _confirmPasswordController),
               const SizedBox(height: 30),
 
               SizedBox(
@@ -253,16 +305,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGenderDropdown({bool enabled = true}) {
     return DropdownButtonFormField<String>(
+      // padding: EdgeInsets.all(8.0),
       value: _selectedGender,
       decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue),
+        ),
         labelText: 'Gender',
-        prefixIcon: const Icon(Icons.wc),
+        labelStyle: TextStyle(color: enabled ? Colors.blue : Colors.grey),
+        prefixIcon: const Icon(Icons.wc,color: Colors.blue,),
         filled: true,
         fillColor: enabled ? Colors.white : Colors.grey[200],
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      items: ['Male', 'Female', 'Other'].map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+      items: ['Male', 'Female', 'Other'].map((g) => DropdownMenuItem(
+    
+        value: g, child: Text(g))).toList(),
       onChanged: enabled ? (v) => setState(() => _selectedGender = v) : null,
+      dropdownColor: Colors.white ,
     );
   }
 

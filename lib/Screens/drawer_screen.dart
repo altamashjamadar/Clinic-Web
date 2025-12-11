@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:rns_herbals_app/Admin/manage_news.dart';
 import 'package:rns_herbals_app/Admin/manage_orders.dart';
@@ -16,6 +16,44 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
+   Map<String, dynamic>? userData; // Store fetched user data
+   bool isLoading = true;
+
+     @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (doc.exists) {
+          setState(() {
+            userData = doc.data();
+            isLoading = false;
+          });
+        }
+      } catch (e) {
+        print('Error fetching user data: $e');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
       final user = FirebaseAuth.instance.currentUser;
@@ -25,35 +63,72 @@ class _DrawerScreenState extends State<DrawerScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
+            if (isLoading)
+            const UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              accountName: Text('Loading...'),
+              accountEmail: Text('Please wait'),
+            )
+          else
             GestureDetector(
               onTap: () {
-                // Navigator.pop(context);
                 Get.toNamed('/profile');
-              
               },
               child: UserAccountsDrawerHeader(
-                         
                 decoration: const BoxDecoration(color: Colors.blue),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundImage: AssetImage(
-                    'assets/images/avatar.png',
-                  ),
-                ),
                 accountName: Text(
-                  user != null ? user.email!.split('@')[0] : 'Guest User',
-                  style: const TextStyle(fontSize: 16),
+                  user != null
+                      ? (user.displayName ??
+                         (userData?['fullName'] as String?) ??
+                         user.email!.split('@')[0])
+                      : 'Guest User',
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 accountEmail: Text(
                   user?.email ?? 'guest@example.com',
-                  style: const TextStyle(fontSize: 14),
+                  style: const TextStyle(fontSize: 14, color: Colors.white70),
                 ),
-                margin: EdgeInsets.zero, // reduce padding
+                margin: EdgeInsets.zero,
               ),
             ),
+            // GestureDetector(
+            //   onTap: () {
+            //     // Navigator.pop(context);
+            //     Get.toNamed('/profile');
+              
+            //   },
+            //   child: UserAccountsDrawerHeader(
+                         
+            //     decoration: const BoxDecoration(color: Colors.blue),
+            //     // currentAccountPicture: const CircleAvatar(
+            //     //   backgroundImage: AssetImage(
+            //     //     'assets/images/avatar.png',
+            //     //   ),s
+            //     // ),s
+            //     // accountName: Text(
+            //     //   user != null ? user.email!.split('@')[0] : 'Guest User',
+            //     //   style: const TextStyle(fontSize: 16),
+            //     // ),
+            //        accountName: Text(
+            //   // 👇 Show fullName if available, fallback to email prefix or "Guest"
+            //   user != null
+            //       ? (user.displayName ?? // If displayName exists (from Auth), use it
+            //          (userData?['fullName'] as String?) ?? // From Firestore
+            //          user.email!.split('@')[0]) // Fallback
+            //       : 'Guest User',
+            //   style: const TextStyle(fontSize: 16, color: Colors.white),
+            // ),
+            //     accountEmail: Text(
+            //       user?.email ?? 'guest@example.com',
+            //       style: const TextStyle(fontSize: 14),
+            //     ),
+            //     margin: EdgeInsets.zero, // reduce padding
+            //   ),
+            // ),
             if(user?.email == 'admin@gmail.com')...[
               ListTile(
                 leading: const Icon(Icons.schedule, color: Colors.blue),
-                title: const Text('Manage Appointments'),
+                title: const Text('Appointments'),
                 onTap: () {
                   Navigator.pop(context);
                   Get.toNamed('/admin-appointments');
@@ -69,7 +144,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               // ),
               ListTile(
                 leading: const Icon(Icons.article, color: Colors.blue),
-                title: const Text('Manage News'),
+                title: const Text('Add News'),
                 onTap: () {
                   Navigator.pop(context);
                   Get.to(ManageNews());
@@ -77,7 +152,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.local_hospital, color: Colors.blue),
-                title: const Text('Manage Camps'),
+                title: const Text('Create Camps'),
                 onTap: () {
                   Navigator.pop(context);
                   Get.toNamed('/manage-camps');
@@ -88,22 +163,28 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 title: const Text('Manage Products'),
                 onTap: () {
                   Navigator.pop(context);
-                  // Get.toNamed('/manage-products');
                   Get.to(AdminProductManagement());
-                },
+                }
               ),
               ListTile(
                 leading: const Icon(Icons.shopping_cart, color: Colors.blue),
-                title: const Text('Manage Orders'),
+                title: const Text('View Orders'),
                 onTap: () {
-                  // Navigator.pop(context);
-                  // Get.toNamed('/manage-orders');
+                  Navigator.pop(context);
                   Get.to(ManageOrders());
                 },
               ),
            
             
             ]else ...[
+            ListTile(
+              leading: const Icon(Icons.home_outlined, color: Colors.blue),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+                Get.toNamed('/home');
+              },
+            ),
             ListTile(
               leading: const Icon(
                 Icons.camera_alt_outlined,
@@ -115,14 +196,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 Get.toNamed('/instagram');
               },
             ),
-            // ListTile(
-            //   leading: const Icon(Icons.home_outlined, color: Colors.blue),
-            //   title: const Text('Home'),
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //     Get.toNamed('/home');
-            //   },
-            // ),
             ListTile(
               leading: const Icon(Icons.calendar_month, color: Colors.blue),
               title: const Text('Book Appointment'),
@@ -156,11 +229,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 // Get.to(NewsPage());
               },
             ),
-            ListTile(leading: Icon(Icons.event,color: Colors.blue,), title: Text('Camps'), onTap: () => Get.toNamed('/camps'), )
+            ListTile(leading: Icon(Icons.event,color: Colors.blue,), title: Text('Camps'), onTap: () => Get.toNamed('/camps'), ),
             // Spacer(),
             ],
-// Spacer(),
+          
             if (user == null)
+            
               ListTile(
                 leading: const Icon(Icons.login, color: Colors.blue),
                 title: const Text('Login'),
@@ -177,7 +251,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   await FirebaseAuth.instance.signOut();
                   Navigator.pop(context);
                   Get.offAllNamed('/home');
-                  Get.snackbar('Logged Out', 'Please login again');
+                  // Get.snackbar('Logged Out', 'Please login again');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Logged out successfully'),
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.floating,
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
                 },
               ),
           ],

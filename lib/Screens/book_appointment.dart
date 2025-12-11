@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 import 'login_screen.dart';
 
 class BookAppointment extends StatefulWidget {
@@ -52,6 +54,23 @@ void _generateTimeSlots() {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 30)),//1 prebooking if 1 momth
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue, // Header background color
+              onPrimary: Colors.white, // Header text color
+              onSurface: Colors.black, // Body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue, // Button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -64,7 +83,10 @@ void _generateTimeSlots() {
 
   Future<void> _showTimeSlotDialog() async {
     if (_selectedDate == null) {
-      Get.snackbar('Error', 'Please select a date first');
+      // Get.snackbar('Error', 'Please select a date first');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content:  Text('Please select a date first')),
+      );
       return;
     }
 
@@ -83,6 +105,7 @@ void _generateTimeSlots() {
       context: context,
       builder: (ctx) {
         return AlertDialog(
+
           backgroundColor: Colors.white,
           title: const Text('Select Time Slot'),
           content: SizedBox(
@@ -99,7 +122,8 @@ void _generateTimeSlots() {
                     setState(() => _selectedTimeSlot = slot);
                     Navigator.pop(ctx);
                   },
-                  backgroundColor: isBooked ? Colors.grey[300] : null,
+                  backgroundColor: isBooked ? Colors.red : Colors.white,
+                  // color: Colors.white,
                   selectedColor: Colors.blue[100],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -109,9 +133,9 @@ void _generateTimeSlots() {
               }).toList(),
             ),
           ),
-
+          
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel',style: TextStyle(color: Colors.blue),)),
           ],
         );
       },
@@ -125,7 +149,10 @@ void _generateTimeSlots() {
   }
 
   if (_nameController.text.isEmpty || _issueController.text.isEmpty || _selectedDate == null || _selectedTimeSlot == null) {
-    Get.snackbar('Error', 'Fill all fields and select date & time');
+    // Get.snackbar('Error', 'Fill all fields and select date & time');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content:  Text('Fill all fields and select date & time')),
+    );
     return;
   }
 
@@ -144,17 +171,23 @@ void _generateTimeSlots() {
     });
 
     // SUCCESS: Show snackbar & clear form
-    Get.snackbar(
-      'Success',
-      'Appointment booked! Waiting for approval.',
+    // Get.snackbar(
+    //   'Success',
+    //   'Appointment booked! Waiting for approval.',
+    //   backgroundColor: Colors.green,
+    //   colorText: Colors.white,
+    //   snackPosition: SnackPosition.TOP,
+    //   margin: const EdgeInsets.all(16),
+    //   borderRadius: 12,
+    //   duration: const Duration(seconds: 3),
+    // );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content:  const Text('Appointment booked! Waiting for approval.'),
       backgroundColor: Colors.green,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-      duration: const Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5)
+      ),
     );
-
     // CLEAR ALL FIELDS
     _nameController.clear();
     _emailController.clear();
@@ -168,7 +201,10 @@ void _generateTimeSlots() {
     // Optional: Scroll to top or stay
     // Get.back(); // Remove if you want to stay on screen
   } catch (e) {
-    Get.snackbar('Error', 'Failed: $e');
+    // Get.snackbar('Error', 'Failed: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content:  Text('Failed to book appointment: $e')),
+    );
   } finally {
     setState(() => _isLoading = false);
   }
@@ -194,7 +230,7 @@ void _generateTimeSlots() {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Book Appointment',style: TextStyle(color: Colors.white),), backgroundColor: Colors.blue, iconTheme: const IconThemeData(color: Colors.white)),
+      appBar: AppBar(title: const Text('Book Appointment',style: TextStyle(color: Colors.white),),centerTitle: true, backgroundColor: Colors.blue, iconTheme: const IconThemeData(color: Colors.white)),
       body: SingleChildScrollView(
        dragStartBehavior: DragStartBehavior.start,
         padding: const EdgeInsets.all(16),
@@ -230,14 +266,19 @@ void _generateTimeSlots() {
             const SizedBox(height: 25),
 
             // Form Fields
-            TextField(controller: _nameController, decoration: _inputDecoration("Name", Icons.person, required: true)),
+            CustomTextField(model: FormFieldModel(label: "Name", hint: "Full Name",prefixIcon: Icons.person,required: true), controller: _nameController),
             const SizedBox(height: 20),
-            TextField(controller: _emailController, decoration: _inputDecoration("Email", Icons.email)),
+            // TextField(controller: _nameController, decoration: _inputDecoration("Name", Icons.person, required: true)),
+            // const SizedBox(height: 20),
+            CustomTextField(model: FormFieldModel(label: "Email", hint: "Enter your email",prefixIcon: Icons.mail), controller: _emailController),
+            // TextField(controller: _emailController, decoration: _inputDecoration("Email", Icons.email)),
             const SizedBox(height: 20),
-            TextField(controller: _phoneController, decoration: _inputDecoration("Phone", Icons.phone)),
+            CustomTextField(model: FormFieldModel(label: "Phone", hint: "Phone Number",keyboardType: TextInputType.phone,prefixIcon: Icons.phone), controller: _phoneController),
+            // TextField(controller: _phoneController, decoration: _inputDecoration("Phone", Icons.phone)),
             const SizedBox(height: 20),
 
             // Date & Time Fields (Small, like current date)
+            
             TextFormField(
               decoration: _inputDecoration(
                 _selectedDate != null ? DateFormat('dd/MM/yyyy').format(_selectedDate!) : 'Select Date',
@@ -246,6 +287,7 @@ void _generateTimeSlots() {
               ),
               readOnly: true,
               onTap: _pickDate,
+
             ),
             const SizedBox(height: 20),
 
@@ -259,8 +301,8 @@ void _generateTimeSlots() {
               onTap: _showTimeSlotDialog,
             ),
             const SizedBox(height: 20),
-
-            TextField(controller: _issueController, decoration: _inputDecoration("Issue", Icons.description, required: true), maxLines: 3),
+            CustomTextField(model: FormFieldModel(label: "Issue", hint: "Write your issue"), controller: _issueController, ),
+            // TextField(controller: _issueController, decoration: _inputDecoration("Issue", Icons.description, required: true), maxLines: 3),
             const SizedBox(height: 30),
 
             SizedBox(

@@ -81,15 +81,24 @@ Future<void> setupFCM() async {
 
     // Optional in-app snackbar
     if (Get.context != null) {
-      Get.snackbar(
-        message.notification?.title ?? 'New Notification',
-        message.notification?.body ?? '',
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        duration: const Duration(seconds: 4),
+      // Get.snackbar(
+      //   message.notification?.title ?? 'New Notification',
+      //   message.notification?.body ?? '',
+      //   backgroundColor: Colors.blue,
+      //   colorText: Colors.white,
+      //   snackPosition: SnackPosition.TOP,
+      //   margin: const EdgeInsets.all(16),
+      //   borderRadius: 12,
+      //   duration: const Duration(seconds: 4),
+      // );
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(
+          content: Text(message.notification?.body ?? ''),
+          backgroundColor: Colors.blue,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 4),
+        ),
       );
     }
   });
@@ -111,7 +120,7 @@ void main() async {
   await Supabase.initialize(
     url: 'https://umufrbjwcwrktdmtlrsw.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtdWZyYmp3Y3dya3RkbXRscnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMzg2MDMsImV4cCI6MjA3OTgxNDYwM30.x9JQMdbWw855KCbg3CobF6ouQSQI-gdREAFtHUclw5Y',
+        'eyJhbGciOiJIUzI1NiIssInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVtdWZyYmp3Y3dya3RkbXRscnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMzg2MDMsImV4cCI6MjA3OTgxNDYwM30.x9JQMdbWw855KCbg3CobF6ouQSQI-gdREAFtHUclw5Y',
   );
 
   // FCM Setup
@@ -139,7 +148,7 @@ class _GynacologistAppState extends State<GynacologistApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'RNS Clinic App',
+      title: 'RNS App',
       theme: ThemeData(primarySwatch: Colors.blue),
       initialRoute: AppRoutes.splash,
       getPages: AppRoutes.pages,

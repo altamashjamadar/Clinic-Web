@@ -112,12 +112,22 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                     backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
-                      Get.snackbar("Hii", "message" ,snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.black87,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(12),
-      duration: const Duration(seconds: 2),
-    );
+
+    //                   Get.snackbar("Hii", "message" ,snackPosition: SnackPosition.TOP,
+    //   backgroundColor: Colors.black87,
+    //   colorText: Colors.white,
+    //   margin: const EdgeInsets.all(12),
+    //   duration: const Duration(seconds: 2),
+    // );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(
+    //     content: Text('This is a snackbar message'),
+    //     backgroundColor: Colors.black87,
+    //     behavior: SnackBarBehavior.floating,
+    //     margin: EdgeInsets.all(12), 
+    //     duration: Duration(seconds: 2),
+    //   ),
+    // );
                       // print(Get.snackbar("ISse", "ssage issue"));
                     if (_currentPage == slides.length - 1) {
                       Get.offAllNamed('/home');

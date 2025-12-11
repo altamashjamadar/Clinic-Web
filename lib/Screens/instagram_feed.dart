@@ -28,9 +28,14 @@ class _InstagramFeedState extends State<InstagramFeed> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Instagram Feed'),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        centerTitle: true,
       ),
-      body: WebViewWidget(controller: controller),
+      body: Center(
+        child: WebViewWidget(controller: controller
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 {
-    "name": "rns_herbals_app",
-    "short_name": "rns_herbals_app",
-    "start_url": ".",
+    "name": "RNS APp",
+    "short_name": "RNS",
+    "start_url": "/RNS-APP/",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",

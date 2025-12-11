@@ -27,7 +27,7 @@ class AdminHome extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        // removed logout button as requested
+     
       ),
       drawer: const DrawerScreen(),
       body: SafeArea(
@@ -217,7 +217,7 @@ class AdminHome extends StatelessWidget {
   Widget _buildQuickActionsGrid(BuildContext context) {
     final actions = [
       {'icon': Icons.schedule, 'label': 'Appointments', 'page': const AdminAppointments()},
-      // {'icon': Icons.article, 'label': 'Add News', 'page': const ManageNews()},
+      {'icon': Icons.article, 'label': 'Add News', 'page': const ManageNews()},
       {'icon': Icons.event, 'label': 'Create Camp', 'page': const ManageCamps()},
       {'icon': Icons.inventory_2, 'label': 'Manage Products', 'page': const AdminProductManagement()},
       {'icon': Icons.shopping_bag, 'label': 'View Orders', 'page': const ManageOrders()},

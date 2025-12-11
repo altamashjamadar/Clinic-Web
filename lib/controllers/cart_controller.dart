@@ -50,7 +50,10 @@ class CartController extends GetxController {
 
   Future<void> addToCart(Map<String, dynamic> product) async {
     if (_user == null) {
-      Get.snackbar('Error', 'Please log in to add items to cart');
+      // Get.snackbar('Error', 'Please log in to add items to cart');
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        const SnackBar(content:  Text('Please log in to add items to cart')),
+      );
       return;
     }
 
@@ -85,13 +88,23 @@ class CartController extends GetxController {
       cartCount.value++;
       await loadCart();
       
-      Get.snackbar('Success', '${product['name']} added to cart',
-          backgroundColor: const Color.fromARGB(255, 76, 175, 80),
-          colorText: const Color.fromARGB(255, 255, 255, 255),
-          margin: const EdgeInsets.all(10),
-          duration: const Duration(seconds: 2));
+      // Get.snackbar('Success', '${product['name']} added to cart',
+      //     backgroundColor: const Color.fromARGB(255, 76, 175, 80),
+      //     colorText: const Color.fromARGB(255, 255, 255, 255),
+      //     margin: const EdgeInsets.all(10),
+      //     duration: const Duration(seconds: 2));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('${product['name']} added to cart'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2)
+        ),
+      );
     } catch (e) {
-      Get.snackbar('Error', 'Failed to add to cart: $e');
+      // Get.snackbar('Error', 'Failed to add to cart: $e');
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('Failed to add to cart: $e')),
+      );
     }
   }
 
@@ -128,7 +141,10 @@ class CartController extends GetxController {
       cartCount.value += change;
       await loadCart();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update quantity: $e');
+      // Get.snackbar('Error', 'Failed to update quantity: $e');/
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('Failed to update quantity: $e')),
+      );
     }
   }
 
@@ -155,9 +171,15 @@ class CartController extends GetxController {
 
       cartCount.value = cartCount.value - quantity;
       await loadCart();
-      Get.snackbar('Removed', '$productName removed from cart');
+      // Get.snackbar('Removed', '$productName removed from cart');
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('$productName removed from cart')),
+        );
     } catch (e) {
-      Get.snackbar('Error', 'Failed to remove from cart: $e');
+      // Get.snackbar('Error', 'Failed to remove from cart: $e');
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('Failed to remove from cart: $e')),
+      );
     }
   }
 
@@ -176,7 +198,10 @@ class CartController extends GetxController {
       cartCount.value = 0;
       totalPrice.value = 0;
     } catch (e) {
-      Get.snackbar('Error', 'Failed to clear cart: $e');
+      // Get.snackbar('Error', 'Failed to clear cart: $e');
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(content:  Text('Failed to clear cart: $e')),
+      );
     }
   }
 }

@@ -23,12 +23,14 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text("RNS HealthCare"),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        title: const Text("RNS HealthCare",style: TextStyle(color: Colors.white),),
+        centerTitle: true,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.blue),
+            icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () => _showNotificationsDialog(user),
           ),
         ],

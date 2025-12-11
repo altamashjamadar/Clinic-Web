@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:rns_herbals_app/Screens/signup.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,15 +56,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
       switch (role) {
         case 'admin':
-          Get.snackbar('Success', 'Welcome, Admin!');
+          // Get.snackbar('Success', 'Welcome, Admin!');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  const Text('Welcome, Admin!'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5)
+            ),
+          );
           Get.offAllNamed('/admin-home');
           break;
         case 'doctor':
-          Get.snackbar('Success', 'Welcome, Doctor!');
+          // Get.snackbar('Success', 'Welcome, Doctor!');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  const Text('Welcome, Doctor!'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5)
+            ),
+          );
           Get.offAllNamed('/doctor');
           break;
         default:
-          Get.snackbar('Success', 'Welcome, User!');
+          // Get.snackbar('Success', 'Welcome, User!');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  const Text('Welcome, User!'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5)
+            ),
+          );
           Get.offAllNamed('/home');
           
       }
@@ -109,39 +132,48 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Image.asset('assets/images/pic1.png', height: 250),
                 const SizedBox(height: 30),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
+
+
+                CustomTextField(model: FormFieldModel(label: 'Email', hint: 'Enter Your email', prefixIcon:Icons.email ), controller: _emailController),
+                // const SizedBox(height: 20),
+                // TextFormField(
+                //   controller: _emailController,
+                //   decoration: const InputDecoration(
+                //     focusColor: Colors.blue,
+                //     iconColor: Colors.blue,
+                //     labelText: 'Email',
+                //     hintText: 'Enter your email',
+                //     prefixIcon: Icon(Icons.email),
+                //     border: OutlineInputBorder(),
+                //     fillColor: Colors.white
+                    
+                //   ),
+                //   keyboardType: TextInputType.emailAddress,
+                // ),
                 const SizedBox(height: 20),
-                TextFormField(
-                  cursorColor: Colors.blue,
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
+                CustomTextField(model: FormFieldModel(label: 'Password', hint: 'Enter Your password', prefixIcon:Icons.lock ,fieldType: FieldType.password,required: true), controller: _passwordController, showPasswordToggle: true,),
+                // TextFormField(
+                //   cursorColor: Colors.blue,
+                //   controller: _passwordController,
+                //   obscureText: _obscurePassword,
+                //   decoration: InputDecoration(
+                //     labelText: 'Password',
+                //     hintText: 'Enter your password',
+                //     prefixIcon: const Icon(Icons.lock),
+                //     suffixIcon: IconButton(
+                //       icon: Icon(
+                //         _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                //         color: Theme.of(context).iconTheme.color,
+                //       ),
+                //       onPressed: () {
+                //         setState(() {
+                //           _obscurePassword = !_obscurePassword;
+                //         });
+                //       },
+                //     ),
+                //     border: const OutlineInputBorder(),
+                //   ),
+                // ),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,

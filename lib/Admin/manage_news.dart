@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 import '../services/SupabaseService.dart';
 
 class ManageNews extends StatefulWidget {
@@ -132,33 +134,39 @@ class _ManageNewsState extends State<ManageNews> {
 
     Get.dialog(
       AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text('Add News'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title *',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              CustomTextField(model: FormFieldModel(label: "title", hint: "enter title",required: true), controller: _titleController,),
+              // TextField(
+              //   controller: _titleController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Title *',
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
               const SizedBox(height: 12),
-              TextField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description *',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 4,
-              ),
+              CustomTextField(model: FormFieldModel(label: "description", hint: "enter description",required: true), controller: _descriptionController,maxLines: 4,),
+              // TextField(
+              //   controller: _descriptionController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Description *',
+              //     border: OutlineInputBorder(),
+              //   ),
+              //   maxLines: 4,
+              // ),
               const SizedBox(height: 16),
               _imageFile == null
                   ? ElevatedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.blue ),
+                    ),
                       onPressed: _pickImage,
-                      icon: const Icon(Icons.photo),
-                      label: const Text('Pick Image'),
+                      icon: const Icon(Icons.photo, color: Colors.white),
+                      label: const Text('Pick Image', style: TextStyle(color: Colors.white),),
                     )
                   : Column(
                       children: [
@@ -176,10 +184,13 @@ class _ManageNewsState extends State<ManageNews> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel', style: TextStyle(color: Colors.blue),),),
           ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.blue),
+            ),
             onPressed: _isLoading ? null : _addNews,
-            child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Add'),
+            child: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Add',style: TextStyle(color: Colors.white),),
           ),
         ],
       ),
@@ -190,14 +201,17 @@ class _ManageNewsState extends State<ManageNews> {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked != null) {
       setState(() => _imageFile = File(picked.path));
-      Get.back(); // Close dialog
-      _showAddNewsDialog(); // Reopen to show preview
+      // Get.back(); // Close dialog
+      // _showAddNewsDialog(); // Reopen to show preview
     }
   }
 
   Future<void> _addNews() async {
     if (_titleController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Title and description required');
+      // Get.snackbar('Error', 'Title and description required');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content:  const Text('Title and description required')),
+        );
       return;
     }
 
@@ -210,7 +224,8 @@ class _ManageNewsState extends State<ManageNews> {
   bucket: 'news',
   folder: 'posts',
 );
-      }
+       print('Image URL from Supabase: $imageUrl');
+    }
 
       await FirebaseFirestore.instance.collection('news').add({
         'title': _titleController.text.trim(),
@@ -219,10 +234,23 @@ class _ManageNewsState extends State<ManageNews> {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      Get.snackbar('Success', 'News added!', backgroundColor: Colors.green, colorText: Colors.white);
-      Get.back();
+        // clear state
+    _titleController.clear();
+    _descriptionController.clear();
+    setState(() => _imageFile = null);
+
+    // Get.snackbar('Success', 'News added!',
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content:  const Text('News added!'), 
+      behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green, ),);
+    Get.back(); // close dialog
     } catch (e) {
-      Get.snackbar('Error', 'Failed: $e');
+       print('Add news failed: $e');
+      // Get.snackbar('Error', 'Failed: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content:  Text('Failed to add news: $e')),
+        );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -235,8 +263,12 @@ class _ManageNewsState extends State<ManageNews> {
         title: const Text('Delete News'),
         content: const Text('This cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Get.back(result: true), child: const Text('Delete')),
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel',style: TextStyle(color: Colors.blue),)),
+          ElevatedButton(onPressed: () => Get.back(result: true),style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.red),
+          ), child: const Text('Delete',style: TextStyle(
+            color: Colors.white
+          ),)),
         ],
       ),
     );
@@ -247,9 +279,15 @@ class _ManageNewsState extends State<ManageNews> {
         if (imageUrl != null && imageUrl.isNotEmpty) {
           await SupabaseService.deleteFileByUrl(imageUrl);
         }
-        Get.snackbar('Success', 'News deleted');
+        // Get.snackbar('Success', 'News deleted');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  const Text('News deleted')),
+          );
       } catch (e) {
-        Get.snackbar('Error', 'Delete failed');
+        // Get.snackbar('Error', 'Delete failed');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  Text('Delete failed: $e')),
+          );
       }
     }
   }

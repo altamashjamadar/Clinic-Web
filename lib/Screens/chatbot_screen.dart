@@ -88,6 +88,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 2,
       ),
@@ -140,6 +141,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                           (q) => ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),

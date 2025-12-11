@@ -37,14 +37,23 @@ await FirebaseFirestore.instance.collection('notifications').add({
     //   'type': 'appointment',
     //   'timestamp': FieldValue.serverTimestamp(),
     // });
-    Get.snackbar(
-      'Success',
-      'Appointment approved',
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(10),
-      duration: const Duration(seconds: 3),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+    content: const Text('Appointment approved'),
+    backgroundColor: Colors.green,
+    duration: const Duration(seconds: 5),
+    behavior: SnackBarBehavior.floating,
+    margin: const EdgeInsets.all(10),
+  ),
+);
+    //  ScaffoldMessenger.of(context).showSnackBar(
+    //   'Success',
+    //   'Appointment approved',
+    //   backgroundColor: Colors.green,
+    //   colorText: Colors.white,
+    //   margin: const EdgeInsets.all(10),
+    //   duration: const Duration(seconds: 3),
+    // );
   }
 
   Future<void> _rejectAppointment(DocumentSnapshot appointment) async {
@@ -64,13 +73,16 @@ await FirebaseFirestore.instance.collection('notifications').add({
         'type': 'appointment',
         'timestamp': FieldValue.serverTimestamp(),
       });
-      Get.snackbar(
-        'Success',
-        'Appointment rejected',
+       ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+        // context : Text('Success'),
+    content: const Text('Appointment rejected'),
         backgroundColor: Colors.red,
-        colorText: Colors.white,
+        behavior: SnackBarBehavior.floating,
+        // content: const Text('Appointment rejected') ,
         margin: const EdgeInsets.all(10),
         duration: const Duration(seconds: 3),
+  )
       );
     }
   }
@@ -94,14 +106,18 @@ await FirebaseFirestore.instance.collection('notifications').add({
           TextButton(
             onPressed: () {
               if (note != null && note!.isNotEmpty) Navigator.pop(context, note);
-              else Get.snackbar(
-                'Error',
-                'Reason is required',
+              else  ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                // 'Error',
+                // Content : Text('Reason is required'),
+                content: const Text('Reason is required'),
+                behavior: SnackBarBehavior.floating,
                 backgroundColor: Colors.red,
-                colorText: Colors.white,
+                // colorText: Colors.white,
                 margin: const EdgeInsets.all(10),
                 duration: const Duration(seconds: 3),
-              );
+               )
+                );
             },
             child: const Text('Reject'),
           ),
@@ -115,11 +131,15 @@ await FirebaseFirestore.instance.collection('notifications').add({
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Manage Appointments'),
-        backgroundColor: Colors.white,
+        title: const Text('Manage Appointments',style: TextStyle(
+          color: Colors.white
+        ),),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
-      drawer: const DrawerScreen(),
+      // drawer: const DrawerScreen(),
       body: Column(
         children: [
           Padding(
