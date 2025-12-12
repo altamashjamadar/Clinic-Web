@@ -1,5 +1,5 @@
 
-// lib/screens/profile_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Pick from Gallery
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85, maxWidth: 800);
     if (picked != null) {
@@ -65,7 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Take Photo
   Future<void> _takePhoto() async {
     final picked = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85, maxWidth: 800);
     if (picked != null) {
@@ -77,15 +75,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Upload to Supabase (Fixed: Correct bucket, path, error handling)
+  
   Future<void> _uploadToSupabase() async {
     if (_imageFile == null || _user == null) {
       setState(() => _uploading = false);
       return;
     }
 
-    final bucket = 'profile-pic';  // Your bucket name (must match dashboard)
-    final filePath = '${_user!.uid}.jpg';  // Simple path
+    final bucket = 'profile-pic';  
+    final filePath = '${_user!.uid}.jpg';  
 
     try {
       // Upload
@@ -93,23 +91,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .from(bucket)
           .upload(filePath, _imageFile!, fileOptions: const FileOptions(upsert: true));
 
-      // Get URL with cache-buster
       final url = '${_supabase.storage.from(bucket).getPublicUrl(filePath)}?t=${DateTime.now().millisecondsSinceEpoch}';
 
-      print('Uploaded: $url');  // Check this in console
+      print('Uploaded: $url'); 
 
       setState(() {
         _profileImageUrl = url;
         _uploading = false;
       });
 
-      // Save to Firestore
+
       await _firestore.collection('users').doc(_user!.uid).update({
         'profileImage': url,
       });
 
-      // Get.snackbar('Success', 'Profile picture updated!', backgroundColor: Colors.green, colorText: Colors.white)
-      // ;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Profile picture updated!'),
@@ -119,8 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     } catch (e) {
-      print('Upload error: $e');  // Check this log
-      // Get.snackbar('Error', 'Upload failed: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      print('Upload error: $e');  
+    
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Upload failed: $e'),
         backgroundColor: Colors.red,
@@ -134,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (_user == null) {
-      // Get.snackbar('Error', 'Login required');
+    
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login required')),
       );
@@ -143,10 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    // Password optional
+   
     if (_passwordController.text.isNotEmpty) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        // Get.snackbar('Error', 'Passwords do not match');
+   
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Passwords do not match')),
         );
@@ -155,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       try {
         await _user!.updatePassword(_passwordController.text);
       } catch (e) {
-        // Get.snackbar('Error', 'Password update failed. Re-login required.');
+       
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password update failed. Re-login required.')),
         );
@@ -172,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
-      // Get.snackbar('Success', 'Profile updated!', backgroundColor: Colors.green, colorText: Colors.white);
+     
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Profile updated!'),
@@ -182,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     } catch (e) {
-      // Get.snackbar('Error', 'Update failed: $e');
+    
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Update failed: $e'),
         backgroundColor: Colors.red,
@@ -211,57 +206,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Profile Image
-              // Stack(
-              //   children: [
-              //     CircleAvatar(
-              //       radius: 60,
-              //       backgroundColor: Colors.blue.shade100,
-              //       child: _uploading
-              //           ? const CircularProgressIndicator(color: Colors.white)
-              //           : _profileImageUrl != null && _profileImageUrl!.isNotEmpty
-              //               ? ClipOval(child: Image.network(_profileImageUrl!, width: 120, height: 120, fit: BoxFit.cover))
-              //               : const Icon(Icons.person, size: 60, color: Colors.white),
-              //     ),
-              //     if (!isGuest)
-              //       Positioned(
-              //         bottom: 0,
-              //         right: 0,
-              //         child: GestureDetector(
-              //           onTap: _showImageSourceDialog,
-              //           child: Container(
-              //             padding: const EdgeInsets.all(8),
-              //             decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle),
-              //             child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-              //           ),
-              //         ),
-              //       ),
-              //   ],
-              // ),
+         
               const SizedBox(height: 30),
 
-              // Form Fields
+             
               CustomTextField(model: FormFieldModel(label: "Full name", hint: "Enter ful name",prefixIcon: Icons.person), controller: _nameController),
-              // _buildTextField(_nameController, 'Full Name', Icons.person, enabled: !isGuest),
+             
               const SizedBox(height: 12),
 
-              // _buildTextField(_phoneController, 'Phone', Icons.phone, enabled: !isGuest),
+             
               CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter phone number",prefixIcon: Icons.phone), controller: _phoneController),
               const SizedBox(height: 12),
               _buildGenderDropdown(enabled: !isGuest),
               const SizedBox(height: 12),
-              // _buildTextField(null, 'Email', Icons.email, initialValue: _user?.email ?? 'guest@example.com', enabled: false),
+              
               CustomTextField(model: FormFieldModel(label: "Email", hint: "Enter email",prefixIcon: Icons.mail), controller: TextEditingController(text: _user?.email ?? 'guest@example.com', ), ),
               const SizedBox(height: 12),
-              // _buildTextField(_addressController, 'Address', Icons.home, enabled: !isGuest, maxLines: 2),
+             
               CustomTextField(model: FormFieldModel(label: "Address", hint: "Enter address", prefixIcon: Icons.home, maxLines: 2
               ), controller: _addressController),
               const SizedBox(height: 12),
               
-              // _buildTextField(_passwordController, 'New Password (Optional)', Icons.lock, obscure: true, enabled: !isGuest),
+            
               CustomTextField(model: FormFieldModel(label: "New Password (Optional)", hint: "Enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _passwordController),
               const SizedBox(height: 12),
-              // _buildTextField(_confirmPasswordController, 'Confirm Current Password', Icons.lock, obscure: true, enabled: !isGuest),
+            
               CustomTextField(model: FormFieldModel(label: "Confirm Current Password", hint: "Re-enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _confirmPasswordController),
               const SizedBox(height: 30),
 

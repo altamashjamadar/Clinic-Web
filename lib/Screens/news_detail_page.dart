@@ -1,4 +1,3 @@
-// lib/screens/news_detail_page.dart
 import 'package:flutter/material.dart';
 
 class NewsDetailPage extends StatelessWidget {

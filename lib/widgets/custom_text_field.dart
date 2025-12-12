@@ -1,143 +1,3 @@
-// // lib/widgets/custom_text_field.dart
-
-// import 'package:flutter/material.dart';
-// import 'package:rns_herbals_app/model/form_field_model.dart';
-
-
-// typedef ValidatorFn = String? Function(String? value);
-
-// class CustomTextField extends StatefulWidget {
-//   final FormFieldModel model;
-//   final TextEditingController controller;
-//   final ValidatorFn? validator;
-//   final ValueChanged<String>? onChanged;
-//   final VoidCallback? onTap;
-//   final Color borderColor;
-//   final Color cursorColor;
-//   final bool? showClearButton; // show small clear icon when text exists
-//   final bool showPasswordToggle; // show eye icon for password fields
-//   final bool autofocus;
-//   final Widget? trailing; // custom widget at the end if needed
-//   final Widget? floatingLabelStyle;
-
-//   const CustomTextField({
-//     super.key,
-//     required this.model,
-//     required this.controller,
-//     this.validator,
-//     this.onChanged,
-//     this.borderColor = Colors.blue,
-//     this.cursorColor = Colors.blue,
-//     this.showClearButton = false,
-//     this.showPasswordToggle = true,
-//     this.autofocus = false,
-//     this.trailing,
-//     this.onTap,
-//     this.floatingLabelStyle,
-//   });
-
-//   @override
-//   State<CustomTextField> createState() => _CustomTextFieldState();
-// }
-
-// class _CustomTextFieldState extends State<CustomTextField> {
-//   bool _obscure = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _obscure = widget.model.fieldType == FieldType.password;
-//   }
-
-//   TextInputType _resolveKeyboardType() {
-//     if (widget.model.keyboardType != null) return widget.model.keyboardType!;
-//     switch (widget.model.fieldType) {
-//       case FieldType.email:
-//         return TextInputType.emailAddress;
-//       case FieldType.number:
-//         return TextInputType.number;
-//       case FieldType.phone:
-//         return TextInputType.phone;
-//       default:
-//         return TextInputType.text;
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final border = OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(12),
-//       borderSide: BorderSide(color: widget.borderColor),
-//     );
-
-//     Widget? suffix;
-//     final hasText = widget.controller.text.isNotEmpty;
-
-//     // Priority: custom trailing > password toggle > static suffix icon > clear button
-//     if (widget.trailing != null) {
-//       suffix = widget.trailing;
-//     } else if (widget.model.fieldType == FieldType.password && widget.showPasswordToggle) {
-//       suffix = IconButton(
-//         icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-//         onPressed: () => setState(() => _obscure = !_obscure),
-//       );
-//     } else if (widget.model.suffixIcon != null) {
-//       suffix = Icon(widget.model.suffixIcon);
-//     } else if (widget.showClearButton == true && hasText) {
-//       suffix = IconButton(
-//         icon: const Icon(Icons.close),
-//         onPressed: () {
-//           widget.controller.clear();
-//           widget.onChanged?.call('');
-//           setState(() {}); // update clear button visibility
-//         },
-//       );
-//     }
-
-//     return TextFormField(
-//       controller: widget.controller,
-//       maxLines: widget.model.maxLines,
-//       readOnly: widget.model.readOnly,
-//       autofocus: widget.autofocus,
-//       enabled: widget.model.enabled,
-
-//       cursorColor: widget.cursorColor,
-//       obscureText: _obscure,
-//       keyboardType: _resolveKeyboardType(),
-//       // maxLines: widget.model.maxLines,
-//       maxLength: widget.model.maxLength,
-//       decoration: InputDecoration(
-//         labelText: widget.model.label + (widget.model.required ? ' *' : ''),
-//         hintText: widget.model.hint,
-//          floatingLabelStyle: TextStyle(
-//     color: widget.borderColor,
-//     fontWeight: FontWeight.w600,
-//   ),
-//         prefixIcon: widget.model.prefixIcon != null ? Icon(widget.model.prefixIcon,color: widget.borderColor,) : null ,
-//         suffixIcon: suffix,
-//         border: border,
-//         enabledBorder: border,
-//         focusedBorder: border.copyWith(borderSide: BorderSide(color: widget.borderColor, width: 2)),
-//         errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.red)),
-//         contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-//       ),
-//       validator: widget.validator ??
-//           (widget.model.required
-//               ? (v) {
-//                   if (v == null || v.trim().isEmpty) return 'Required';
-//                   return null;
-//                 }
-//               : null),
-//       onChanged: (v) {
-//         setState(() {}); // for clear button visibility
-//         widget.onChanged?.call(v);
-//       },
-//     );
-//   }
-// }
-
-
-// lib/widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
 import 'package:rns_herbals_app/model/form_field_model.dart';
 
@@ -150,14 +10,14 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
 
-  // New optional overrides (if provided they take precedence over model)
+
   final bool? readOnly;
   final int? maxLines;
 
   final Color borderColor;
   final Color cursorColor;
-  final bool showClearButton; // show small clear icon when text exists
-  final bool showPasswordToggle; // show eye icon for password fields
+  final bool showClearButton; 
+  final bool showPasswordToggle; 
   final bool autofocus;
   final Widget? trailing;
 
@@ -214,7 +74,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    // effective values: widget overrides model when provided
+    
     final effectiveReadOnly = widget.readOnly ?? widget.model.readOnly;
     final effectiveMaxLines = widget.maxLines ?? widget.model.maxLines;
 
@@ -226,7 +86,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     Widget? suffix;
     final hasText = widget.controller.text.isNotEmpty;
 
-    // Priority: trailing > password toggle > static suffixIcon > clear button
+    
     if (widget.trailing != null) {
       suffix = widget.trailing;
     } else if (widget.model.fieldType == FieldType.password && widget.showPasswordToggle) {
@@ -259,7 +119,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       maxLines: effectiveMaxLines,
       maxLength: widget.model.maxLength,
       onTap: () {
-        // defensive: if readOnly we remove focus to prevent keyboard flash
+     
         if (effectiveReadOnly) {
           FocusScope.of(context).requestFocus(FocusNode());
         }

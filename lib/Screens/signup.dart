@@ -1,5 +1,3 @@
-
-// lib/Screens/signup.dart
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -28,13 +26,13 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => _isLoading = true);
     try {
-      // 1. Create user
+   
       UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // 2. Save profile
+ 
       await FirebaseFirestore.instance.collection('users').doc(cred.user!.uid).set({
         'fullName': _nameController.text.trim(),
         'phoneNumber': _phoneController.text.trim(),
@@ -43,16 +41,9 @@ class _SignupPageState extends State<SignupPage> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // 3. Send verification email
+   
       await cred.user!.sendEmailVerification();
 
-      // Get.snackbar(
-      //   'Check Your Email',
-      //   'Verification link sent to ${_emailController.text}',
-      //   backgroundColor: Colors.orange,
-      //   colorText: Colors.white,
-      //   duration: const Duration(seconds: 6),
-      // );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Verification link sent to ${_emailController.text}'),
@@ -61,18 +52,17 @@ class _SignupPageState extends State<SignupPage> {
           duration: const Duration(seconds: 6),
         ),
       );  
-      // 4. Go to verification screen
+    
       Get.offAll(() => VerifyEmailScreen(user: cred.user!));
     } on FirebaseAuthException catch (e) {
       String msg = 'Signup failed';
       if (e.code == 'weak-password') msg = 'Password too weak';
       if (e.code == 'email-already-in-use') msg = 'Email already registered';
-      // Get.snackbar('Error', msg);
+     
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content:  Text(msg)),
       );
     } catch (e) {
-      // Get.snackbar('Error', 'Something went wrong');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content:  const Text('Something went wrong')),
       );
@@ -114,22 +104,18 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: 30),
 
              CustomTextField(model: FormFieldModel(label: 'Full Name', hint: 'Please Enter Full Name',prefixIcon: Icons.person,required: true), controller: _nameController),
-              // TextFormField(controller: _nameController, decoration: const InputDecoration(labelText: 'Full Name *'), validator: (v) => v!.isEmpty ? 'Required' : null),
+             
               const SizedBox(height: 16),
               CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter Phone number",prefixIcon: Icons.phone,required: true), controller: _phoneController),
-              // TextFormField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone *'), keyboardType: TextInputType.phone, validator: (v) => v!.length != 10 ? '10 digits' : null),
+          
               const SizedBox(height: 16),
               CustomTextField(model: FormFieldModel(label: 'Email', hint: 'Please Enter Email', keyboardType: TextInputType.emailAddress,prefixIcon: Icons.mail,required: true), controller: _emailController),
-              // TextFormField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email *'), keyboardType: TextInputType.emailAddress, validator: (v) => !GetUtils.isEmail(v!) ? 'Invalid email' : null),
+          
               const SizedBox(height: 16),
               CustomTextField(model: FormFieldModel(label: 'Password', hint: 'Enter Your password', fieldType: FieldType.password, required: true,prefixIcon: Icons.lock), controller: _passwordController, showPasswordToggle: true,),
-              // TextFormField(controller: _passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Password *'), validator: (v) => v!.length < 6 ? 'Min 6 chars' : null),
+          
               const SizedBox(height: 24),
-              // ElevatedButton(
-              //   onPressed: _isLoading ? null : _signup,
-              //   child: _isLoading ? const CircularProgressIndicator() : const Text('Sign Up'),
-              // ),
-
+          
                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -161,8 +147,6 @@ class _SignupPageState extends State<SignupPage> {
   }
 }
 
-// Verification Screen
-
 class VerifyEmailScreen extends StatefulWidget {
   final User user;
   const VerifyEmailScreen({super.key, required this.user});
@@ -183,7 +167,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
   void initState() {
     super.initState();
 
-    // Animation
+
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -191,7 +175,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
-    // Auto-check every 3 seconds
+
     Timer.periodic(const Duration(seconds: 3), (_) => _checkVerified());
   }
 
@@ -199,12 +183,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     await widget.user.reload();
     if (widget.user.emailVerified) {
       Get.offAllNamed('/home');
-      // Get.snackbar(
-      //   'Verified!',
-      //   'Welcome to RNS HealthCare 🎉',
-      //   backgroundColor: Colors.green,
-      //   colorText: Colors.white,
-      // );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Welcome to RNS HealthCare 🎉'),
@@ -225,13 +203,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
     });
 
     await widget.user.sendEmailVerification();
-
-    // Get.snackbar(
-    //   'Sent!',
-    //   'Verification email sent again',
-    //   backgroundColor: Colors.blue,
-    //   colorText: Colors.white,
-    // );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Verification email sent again'),
@@ -240,7 +211,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
         duration: Duration(seconds: 4),
       ),
     );
-    // Start countdown
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdown == 0) {
         setState(() => _canResend = true);
@@ -270,7 +241,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Animated Icon
+
                 ScaleTransition(
                   scale: _animation,
                   child: Container(
@@ -288,7 +259,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 const SizedBox(height: 32),
 
-                // Title
+
                 const Text(
                   'Verify Your Email',
                   style: TextStyle(
@@ -299,7 +270,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 const SizedBox(height: 16),
 
-                // Subtitle
+
                 Text(
                   'We sent a verification link to',
                   style: TextStyle(fontSize: 16, color: Colors.grey[700]),
@@ -315,7 +286,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 const SizedBox(height: 24),
 
-                // Instructions
+
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -332,7 +303,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 const SizedBox(height: 32),
 
-                // Resend Button with Countdown
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -348,7 +319,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen>
                 ),
                 const SizedBox(height: 16),
 
-                // Logout Option
+
                 TextButton(
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();

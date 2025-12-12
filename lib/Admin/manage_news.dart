@@ -1,5 +1,4 @@
 
-// lib/screens/manage_news.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -141,23 +140,9 @@ class _ManageNewsState extends State<ManageNews> {
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomTextField(model: FormFieldModel(label: "title", hint: "enter title",required: true), controller: _titleController,),
-              // TextField(
-              //   controller: _titleController,
-              //   decoration: const InputDecoration(
-              //     labelText: 'Title *',
-              //     border: OutlineInputBorder(),
-              //   ),
-              // ),
+            
               const SizedBox(height: 12),
-              CustomTextField(model: FormFieldModel(label: "description", hint: "enter description",required: true), controller: _descriptionController,maxLines: 4,),
-              // TextField(
-              //   controller: _descriptionController,
-              //   decoration: const InputDecoration(
-              //     labelText: 'Description *',
-              //     border: OutlineInputBorder(),
-              //   ),
-              //   maxLines: 4,
-              // ),
+           
               const SizedBox(height: 16),
               _imageFile == null
                   ? ElevatedButton.icon(
@@ -201,8 +186,7 @@ class _ManageNewsState extends State<ManageNews> {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked != null) {
       setState(() => _imageFile = File(picked.path));
-      // Get.back(); // Close dialog
-      // _showAddNewsDialog(); // Reopen to show preview
+     
     }
   }
 
@@ -239,7 +223,7 @@ class _ManageNewsState extends State<ManageNews> {
     _descriptionController.clear();
     setState(() => _imageFile = null);
 
-    // Get.snackbar('Success', 'News added!',
+   
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content:  const Text('News added!'), 
       behavior: SnackBarBehavior.floating,

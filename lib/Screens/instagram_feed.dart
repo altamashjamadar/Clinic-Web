@@ -19,7 +19,7 @@ class _InstagramFeedState extends State<InstagramFeed> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..loadRequest(
             Uri.parse('https://www.instagram.com/dratiyasana/embed'),
-          ); // Replace with your clinic's username
+          ); 
   }
 
   @override

@@ -1,4 +1,3 @@
-// lib/Screens/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'chatbot_screen.dart';
 import 'drawer_screen.dart';
-import 'login_screen.dart'; // Add your login screen
+import 'login_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -69,10 +68,7 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Slider (optional)
-          // const SizedBox(height: 20),
-
-          // About Card
+        
           Card(
             color: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

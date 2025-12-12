@@ -1,5 +1,4 @@
 
-// lib/screens/book_appointment.dart
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -83,14 +82,14 @@ void _generateTimeSlots() {
 
   Future<void> _showTimeSlotDialog() async {
     if (_selectedDate == null) {
-      // Get.snackbar('Error', 'Please select a date first');
+    
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content:  Text('Please select a date first')),
       );
       return;
     }
 
-    // Get booked slots
+    
     final bookedSnap = await FirebaseFirestore.instance
         .collection('appointments')
         .where('date', isEqualTo: Timestamp.fromDate(_selectedDate!))
@@ -149,7 +148,7 @@ void _generateTimeSlots() {
   }
 
   if (_nameController.text.isEmpty || _issueController.text.isEmpty || _selectedDate == null || _selectedTimeSlot == null) {
-    // Get.snackbar('Error', 'Fill all fields and select date & time');
+   
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content:  Text('Fill all fields and select date & time')),
     );
@@ -170,17 +169,7 @@ void _generateTimeSlots() {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
-    // SUCCESS: Show snackbar & clear form
-    // Get.snackbar(
-    //   'Success',
-    //   'Appointment booked! Waiting for approval.',
-    //   backgroundColor: Colors.green,
-    //   colorText: Colors.white,
-    //   snackPosition: SnackPosition.TOP,
-    //   margin: const EdgeInsets.all(16),
-    //   borderRadius: 12,
-    //   duration: const Duration(seconds: 3),
-    // );
+  
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content:  const Text('Appointment booked! Waiting for approval.'),
       backgroundColor: Colors.green,
@@ -236,7 +225,7 @@ void _generateTimeSlots() {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Doctor Info
+            
             Card(
               color: Colors.white,
               
@@ -265,19 +254,19 @@ void _generateTimeSlots() {
 
             const SizedBox(height: 25),
 
-            // Form Fields
+            
             CustomTextField(model: FormFieldModel(label: "Name", hint: "Full Name",prefixIcon: Icons.person,required: true), controller: _nameController),
             const SizedBox(height: 20),
-            // TextField(controller: _nameController, decoration: _inputDecoration("Name", Icons.person, required: true)),
-            // const SizedBox(height: 20),
+            
+            
             CustomTextField(model: FormFieldModel(label: "Email", hint: "Enter your email",prefixIcon: Icons.mail), controller: _emailController),
-            // TextField(controller: _emailController, decoration: _inputDecoration("Email", Icons.email)),
+            
             const SizedBox(height: 20),
             CustomTextField(model: FormFieldModel(label: "Phone", hint: "Phone Number",keyboardType: TextInputType.phone,prefixIcon: Icons.phone), controller: _phoneController),
-            // TextField(controller: _phoneController, decoration: _inputDecoration("Phone", Icons.phone)),
+            
             const SizedBox(height: 20),
 
-            // Date & Time Fields (Small, like current date)
+            
             
             TextFormField(
               decoration: _inputDecoration(
@@ -302,7 +291,7 @@ void _generateTimeSlots() {
             ),
             const SizedBox(height: 20),
             CustomTextField(model: FormFieldModel(label: "Issue", hint: "Write your issue"), controller: _issueController, ),
-            // TextField(controller: _issueController, decoration: _inputDecoration("Issue", Icons.description, required: true), maxLines: 3),
+        
             const SizedBox(height: 30),
 
             SizedBox(
@@ -380,21 +369,6 @@ void _generateTimeSlots() {
         ),
       ),
 
-      // Bottom Tab Bar (Same as HomePage)
-      // bottomNavigationBar: BottomNavigationBar(
-      //   selectedItemColor: Colors.blue,
-      //   unselectedItemColor: Colors.grey,
-      //   currentIndex: 1,
-      //   onTap: (i) {
-      //     if (i == 0) Get.offAllNamed('/home');
-      //     if (i == 2) Get.toNamed('/instagram');
-      //   },
-      //   items: const [
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Appointments'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Instagram'),
-      //   ],
-      // ),
     );
   }
 

@@ -33,15 +33,14 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
-      User? user = userCredential.user; // Handle null user
+      User? user = userCredential.user; 
       if (user == null) {
         throw Exception('Authentication failed: User is null');
       }
 
-      // Debug: Log the UID
       print('Authenticated user UID: ${user.uid}');
 
-      // Fetch user document
+
       DocumentSnapshot userDoc = await _firestore
           .collection('users')
           .doc(user.uid)
@@ -50,13 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
         throw Exception('User document not found for UID: ${user.uid}. Contact admin.');
       }
 
-      // Safely access role
-      String role = userDoc['role'] as String? ?? 'user'; // Cast and provide default
-      print('User role: $role'); // Debug role
+
+      String role = userDoc['role'] as String? ?? 'user';
+      print('User role: $role'); 
 
       switch (role) {
         case 'admin':
-          // Get.snackbar('Success', 'Welcome, Admin!');
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content:  const Text('Welcome, Admin!'),
             backgroundColor: Colors.green,
@@ -67,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Get.offAllNamed('/admin-home');
           break;
         case 'doctor':
-          // Get.snackbar('Success', 'Welcome, Doctor!');
+        
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content:  const Text('Welcome, Doctor!'),
             backgroundColor: Colors.green,
@@ -78,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Get.offAllNamed('/doctor');
           break;
         default:
-          // Get.snackbar('Success', 'Welcome, User!');
+        
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content:  const Text('Welcome, User!'),
             backgroundColor: Colors.green,
@@ -92,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       setState(() {
         String error = e.toString();
-        print('Login error: $error'); // Debug log
+        print('Login error: $error'); 
         if (error.contains('wrong-password')) {
           _errorMessage = 'Incorrect password';
         } else if (error.contains('user-not-found')) {
@@ -135,45 +134,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
                 CustomTextField(model: FormFieldModel(label: 'Email', hint: 'Enter Your email', prefixIcon:Icons.email ), controller: _emailController),
-                // const SizedBox(height: 20),
-                // TextFormField(
-                //   controller: _emailController,
-                //   decoration: const InputDecoration(
-                //     focusColor: Colors.blue,
-                //     iconColor: Colors.blue,
-                //     labelText: 'Email',
-                //     hintText: 'Enter your email',
-                //     prefixIcon: Icon(Icons.email),
-                //     border: OutlineInputBorder(),
-                //     fillColor: Colors.white
-                    
-                //   ),
-                //   keyboardType: TextInputType.emailAddress,
-                // ),
+          
                 const SizedBox(height: 20),
                 CustomTextField(model: FormFieldModel(label: 'Password', hint: 'Enter Your password', prefixIcon:Icons.lock ,fieldType: FieldType.password,required: true), controller: _passwordController, showPasswordToggle: true,),
-                // TextFormField(
-                //   cursorColor: Colors.blue,
-                //   controller: _passwordController,
-                //   obscureText: _obscurePassword,
-                //   decoration: InputDecoration(
-                //     labelText: 'Password',
-                //     hintText: 'Enter your password',
-                //     prefixIcon: const Icon(Icons.lock),
-                //     suffixIcon: IconButton(
-                //       icon: Icon(
-                //         _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                //         color: Theme.of(context).iconTheme.color,
-                //       ),
-                //       onPressed: () {
-                //         setState(() {
-                //           _obscurePassword = !_obscurePassword;
-                //         });
-                //       },
-                //     ),
-                //     border: const OutlineInputBorder(),
-                //   ),
-                // ),
+               
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -207,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 const SizedBox(height: 20),
                 const Text(
-                  'Test: admin@gmail.com/1234 | doctor@gmail.com/doctor | user@gmail.com/user',
+                  'Test: admin@gmail.com/123456 | user@gmail.com/user123',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),

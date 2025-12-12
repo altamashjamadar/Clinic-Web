@@ -181,10 +181,7 @@ await FirebaseFirestore.instance.collection('notifications').add({
                       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: ListTile(
                         title: Text(data['name'] ?? 'Unknown'),
-                        // subtitle: Text(
-                        //   'Date: ${data['date'].toDate()}\nTime: ${data['timeSlot']}\nIssue: ${data['issue'] ?? ''}\nNote: ${data['adminNote'] ?? ''}',
-                        // ),
-                        // In the ListView.builder, update the subtitle Text widget:
+                        
 subtitle: Text(
   'Date: ${data['date']?.toDate()?.toString() ?? 'Not specified'}\n'  // Null safe access
   'Time: ${data['timeSlot'] ?? 'Not specified'}\n'

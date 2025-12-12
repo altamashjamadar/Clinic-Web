@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:rns_herbals_app/Admin/manage_news.dart';
 import 'package:rns_herbals_app/Admin/manage_orders.dart';
 import 'package:rns_herbals_app/Admin/manage_products.dart';
-// import 'package:intl/intl.dart';
 
 
 class DrawerScreen extends StatefulWidget {
@@ -16,7 +15,7 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreenState extends State<DrawerScreen> {
-   Map<String, dynamic>? userData; // Store fetched user data
+   Map<String, dynamic>? userData; 
    bool isLoading = true;
 
      @override
@@ -91,40 +90,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 margin: EdgeInsets.zero,
               ),
             ),
-            // GestureDetector(
-            //   onTap: () {
-            //     // Navigator.pop(context);
-            //     Get.toNamed('/profile');
-              
-            //   },
-            //   child: UserAccountsDrawerHeader(
-                         
-            //     decoration: const BoxDecoration(color: Colors.blue),
-            //     // currentAccountPicture: const CircleAvatar(
-            //     //   backgroundImage: AssetImage(
-            //     //     'assets/images/avatar.png',
-            //     //   ),s
-            //     // ),s
-            //     // accountName: Text(
-            //     //   user != null ? user.email!.split('@')[0] : 'Guest User',
-            //     //   style: const TextStyle(fontSize: 16),
-            //     // ),
-            //        accountName: Text(
-            //   // 👇 Show fullName if available, fallback to email prefix or "Guest"
-            //   user != null
-            //       ? (user.displayName ?? // If displayName exists (from Auth), use it
-            //          (userData?['fullName'] as String?) ?? // From Firestore
-            //          user.email!.split('@')[0]) // Fallback
-            //       : 'Guest User',
-            //   style: const TextStyle(fontSize: 16, color: Colors.white),
-            // ),
-            //     accountEmail: Text(
-            //       user?.email ?? 'guest@example.com',
-            //       style: const TextStyle(fontSize: 14),
-            //     ),
-            //     margin: EdgeInsets.zero, // reduce padding
-            //   ),
-            // ),
+            
             if(user?.email == 'admin@gmail.com')...[
               ListTile(
                 leading: const Icon(Icons.schedule, color: Colors.blue),
@@ -134,14 +100,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                   Get.toNamed('/admin-appointments');
                 },
               ),
-              // ListTile(
-              //   leading: const Icon(Icons.admin_panel_settings, color: Colors.blue),
-              //   title: const Text('Admin Home'),
-              //   onTap: () {
-              //     Navigator.pop(context);
-              //     Get.toNamed('/admin');
-              //   },
-              // ),
+             
+             
               ListTile(
                 leading: const Icon(Icons.article, color: Colors.blue),
                 title: const Text('Add News'),

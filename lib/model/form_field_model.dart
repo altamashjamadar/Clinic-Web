@@ -1,4 +1,3 @@
-// lib/models/form_field_model.dart
 
 import 'package:flutter/material.dart';
 
@@ -11,11 +10,11 @@ enum FieldType {
 }
 
 class FormFieldModel {
-  final String name; // optional identifier
+  final String name; 
   final String label;
   final String hint;
   final IconData? prefixIcon;
-  final IconData? suffixIcon; // used if you want a static suffix icon
+  final IconData? suffixIcon; 
   final FieldType fieldType;
   final bool required;
   final bool enabled;

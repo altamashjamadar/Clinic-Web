@@ -1,7 +1,3 @@
-
-
-
-// lib/screens/admin_home.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -83,7 +79,6 @@ class AdminHome extends StatelessWidget {
         ),
       ),
 
-      // bottomNavigationBar removed as requested
     );
   }
 
@@ -213,7 +208,6 @@ class AdminHome extends StatelessWidget {
     );
   }
 
-  // 2. Quick Actions Grid (redesigned)
   Widget _buildQuickActionsGrid(BuildContext context) {
     final actions = [
       {'icon': Icons.schedule, 'label': 'Appointments', 'page': const AdminAppointments()},
@@ -272,5 +266,4 @@ class AdminHome extends StatelessWidget {
     );
   }
 
-  // Recent Activity and other removed sections were intentionally deleted to keep UI focused.
 }

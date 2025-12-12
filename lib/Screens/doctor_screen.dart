@@ -16,7 +16,7 @@ class DoctorScreen extends StatelessWidget {
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               Get.offAllNamed('/login');
-              // Get.snackbar('Logged Out', 'See you soon!');
+             
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Logged out successfully'),
@@ -46,7 +46,7 @@ class DoctorScreen extends StatelessWidget {
         ],
         currentIndex: 0,
         onTap: (index) {
-          // Add navigation logic later
+         
         },
       ),
     );

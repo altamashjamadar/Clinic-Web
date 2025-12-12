@@ -11,8 +11,7 @@ import 'package:rns_herbals_app/Admin/admin_appointments.dart';
 import 'package:rns_herbals_app/Screens/chatbot_screen.dart';
 import 'package:rns_herbals_app/Screens/news_page.dart';
 import 'package:rns_herbals_app/Screens/doctor_screen.dart';
-import 'package:rns_herbals_app/Screens/login_screen.dart'; // Added LoginScreen import
-// import 'package:rns_herbals_app/Screens/profile.dart';
+import 'package:rns_herbals_app/Screens/login_screen.dart'; 
 import 'package:rns_herbals_app/Screens/profile_screen.dart';
 import 'package:rns_herbals_app/Screens/setting.dart';
 import 'package:rns_herbals_app/Screens/signup.dart';
@@ -59,6 +58,6 @@ static final List<GetPage> pages=[
   GetPage(name: AppRoutes.manageProducts, page: () => AdminProductManagement()),
   GetPage(name: AppRoutes.camps, page: () => CampsPage()),
   GetPage(name: AppRoutes.profile, page: () => ProfileScreen()),
-  // Add more routes as needed
+ 
 ];
 }

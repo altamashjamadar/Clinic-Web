@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:rns_herbals_app/Screens/home_page.dart';
+
 import '../model/slide_model.dart';
 import 'package:get/get.dart';
 
@@ -113,22 +113,6 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                   ),
                   onPressed: () {
 
-    //                   Get.snackbar("Hii", "message" ,snackPosition: SnackPosition.TOP,
-    //   backgroundColor: Colors.black87,
-    //   colorText: Colors.white,
-    //   margin: const EdgeInsets.all(12),
-    //   duration: const Duration(seconds: 2),
-    // );
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   const SnackBar(
-    //     content: Text('This is a snackbar message'),
-    //     backgroundColor: Colors.black87,
-    //     behavior: SnackBarBehavior.floating,
-    //     margin: EdgeInsets.all(12), 
-    //     duration: Duration(seconds: 2),
-    //   ),
-    // );
-                      // print(Get.snackbar("ISse", "ssage issue"));
                     if (_currentPage == slides.length - 1) {
                       Get.offAllNamed('/home');
                     } else {

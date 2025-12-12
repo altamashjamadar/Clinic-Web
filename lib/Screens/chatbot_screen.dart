@@ -13,7 +13,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     'Hi! 👋 I’m your health assistant. How can I help you today?',
   ];
 
-  // Predefined question flow
   final List<List<String>> questions = [
     [
       'Menstrual health',
@@ -31,7 +30,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     ['Herbal supplements', 'Lifestyle guidance', 'Consult a doctor'],
   ];
 
-  // Answers mapped to responses
   final Map<String, String> answers = {
     'Menstrual health':
         'Tracking cycles, stress management, and herbal teas may help regulate periods 🌿.',
