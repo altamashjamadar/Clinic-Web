@@ -20,7 +20,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
-
+ Future<void> _loadUserProfile() async {
+    if (_user == null) return;
+    final doc = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
+    if (doc.exists) {
+      final data = doc.data()!;
+      setState(() {
+        _nameController.text = data['fullName'] ?? '';
+        // _emailController.text = data['email'] ?? '';
+        _addressController.text = data['address'] ?? '';
+        _phoneController.text = data['phoneNumber'] ?? '';
+      });
+    }else{
+      setState(() {
+        _nameController.text = _user!.displayName ?? '';
+        // _emailController.text = _user!.email ?? '';
+        _addressController.text = '';
+        _phoneController.text = _user!.phoneNumber ?? '';
+      });
+    }
+  }
   Future<void> _placeOrder() async {
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
@@ -118,6 +137,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } finally {
       setState(() => _loading = false);
     }
+  }
+@override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
   }
 
   @override

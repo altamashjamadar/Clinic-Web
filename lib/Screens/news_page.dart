@@ -17,6 +17,7 @@ class NewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('News'),
@@ -40,7 +41,9 @@ class NewsPage extends StatelessWidget {
           final news = snapshot.data?.docs ?? [];
           if (news.isEmpty) {
             return const Center(
+
               child: Column(
+                
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.article_outlined, size: 80, color: Colors.grey),
@@ -51,95 +54,102 @@ class NewsPage extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: news.length,
-            itemBuilder: (context, index) {
-              final doc = news[index];
-              final data = doc.data() as Map<String, dynamic>;
-              final date = data['timestamp'] != null
-                  ? DateFormat('dd MMM yyyy').format((data['timestamp'] as Timestamp).toDate())
-                  : 'Unknown date';
-              final title = (data['title'] ?? '').toString();
-              final desc = (data['description'] ?? '').toString();
-              final img = (data['imageUrl'] ?? '').toString();
-
-              return InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () => _openNewsSheet(context, title, desc, img, date),
-
-                child: Card(
-                  color: Colors.white,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (img.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                          child: Image.network(
-                            img,
-                            height: 180,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) {
-                              if (progress == null) return child;
-                              return Container(
-                                height: 180,
-                                color: Colors.grey[200],
-                                child: const Center(child: CircularProgressIndicator()),
-                              );
-                            },
-                            errorBuilder: (_, __, ___) => Container(
+          return NotificationListener<OverscrollIndicatorNotification>(
+            onNotification: (OverscrollIndicatorNotification notification) {
+              notification.disallowIndicator();
+              return true;
+            },
+            child: ListView.builder(
+              physics: const ClampingScrollPhysics(),    
+              padding: const EdgeInsets.all(12),
+              itemCount: news.length,
+              itemBuilder: (context, index) {
+                final doc = news[index];
+                final data = doc.data() as Map<String, dynamic>;
+                final date = data['timestamp'] != null
+                    ? DateFormat('dd MMM yyyy').format((data['timestamp'] as Timestamp).toDate())
+                    : 'Unknown date';
+                final title = (data['title'] ?? '').toString();
+                final desc = (data['description'] ?? '').toString();
+                final img = (data['imageUrl'] ?? '').toString();
+            
+                return InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => _openNewsSheet(context, title, desc, img, date),
+            
+                  child: Card(
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (img.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                            child: Image.network(
+                              img,
                               height: 180,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                           
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    title.isNotEmpty ? title : 'No Title',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    desc,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    'Published: $date',
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                  ),
-                                ],
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Container(
+                                  height: 180,
+                                  color: Colors.grey[200],
+                                  child: const Center(child: CircularProgressIndicator()),
+                                );
+                              },
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 180,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
                               ),
                             ),
-
-                           
-                            const SizedBox(width: 8),
-                            const Icon(Icons.chevron_right, color: Colors.grey),
-                          ],
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                             
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      title.isNotEmpty ? title : 'No Title',
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      desc,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      'Published: $date',
+                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
+            
+                             
+                              const SizedBox(width: 8),
+                              const Icon(Icons.chevron_right, color: Colors.grey),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),
@@ -163,78 +173,82 @@ class NewsPage extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
-              child: SingleChildScrollView(
-                controller: controller,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                   
-                    const SizedBox(height: 12),
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+              child: ScrollConfiguration(
+                  behavior: ScrollBehavior().copyWith(overscroll: false),
+                child: SingleChildScrollView(
+                  controller: controller,
+                  physics: const ClampingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                     
+                      const SizedBox(height: 12),
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    if (imageUrl.isNotEmpty)
-                      GestureDetector(
-                        onTap: () => _openFullImage(context, imageUrl),
-
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
-                          child: Image.network(
-                            imageUrl,
-                            height: 220,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                      const SizedBox(height: 12),
+                
+                      if (imageUrl.isNotEmpty)
+                        GestureDetector(
+                          onTap: () => _openFullImage(context, imageUrl),
+                
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
+                            child: Image.network(
+                              imageUrl,
                               height: 220,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 220,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                              ),
                             ),
                           ),
                         ),
+                
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title.isNotEmpty ? title : 'No Title', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text('Published: $date', style: const TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 12),
+                            Text(description, style: const TextStyle(fontSize: 16, height: 1.5)),
+                            const SizedBox(height: 20),
+                
+                           
+                            Row(
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); 
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => NewsDetailPage(title: title, description: description, imageUrl: imageUrl, date: date)));
+                                  },
+                                  icon: const Icon(Icons.open_in_new,color: Colors.white,),
+                                  label: const Text('View Full Page',style: TextStyle(color: Colors.white),),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                                ),
+                                const SizedBox(width: 12),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Close',style: TextStyle(color: Colors.blue),),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
                       ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(title.isNotEmpty ? title : 'No Title', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Text('Published: $date', style: const TextStyle(color: Colors.grey)),
-                          const SizedBox(height: 12),
-                          Text(description, style: const TextStyle(fontSize: 16, height: 1.5)),
-                          const SizedBox(height: 20),
-
-                         
-                          Row(
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); 
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => NewsDetailPage(title: title, description: description, imageUrl: imageUrl, date: date)));
-                                },
-                                icon: const Icon(Icons.open_in_new,color: Colors.white,),
-                                label: const Text('View Full Page',style: TextStyle(color: Colors.white),),
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                              ),
-                              const SizedBox(width: 12),
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Close',style: TextStyle(color: Colors.blue),),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

@@ -83,8 +83,12 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up',style: TextStyle(color: Colors.white),),
+      appBar: AppBar(title: const Text('Sign Up',style: TextStyle(color: Colors.white),
+    
+      ),
+      centerTitle: true,
       backgroundColor: Colors.blue  ,
+      foregroundColor: Colors.white,
       ),
       body: Container(
           decoration: const BoxDecoration(
@@ -106,7 +110,8 @@ class _SignupPageState extends State<SignupPage> {
              CustomTextField(model: FormFieldModel(label: 'Full Name', hint: 'Please Enter Full Name',prefixIcon: Icons.person,required: true), controller: _nameController),
              
               const SizedBox(height: 16),
-              CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter Phone number",prefixIcon: Icons.phone,required: true), controller: _phoneController),
+              CustomTextField(model: FormFieldModel(label: "Phone", hint: "Enter Phone number",prefixIcon: Icons.phone,required: true,), controller: _phoneController),//country code picker can be added
+              // date feild last menses date can be added here
           
               const SizedBox(height: 16),
               CustomTextField(model: FormFieldModel(label: 'Email', hint: 'Please Enter Email', keyboardType: TextInputType.emailAddress,prefixIcon: Icons.mail,required: true), controller: _emailController),

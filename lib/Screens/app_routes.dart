@@ -38,6 +38,7 @@ class AppRoutes {
   static const String introSlider = '/intro-slider';
   static const String camps = '/camps';
   static const String profile = '/profile';
+  // static const String settingsScreen = '/settingsScreen';
   
 
 static final List<GetPage> pages=[
@@ -58,6 +59,6 @@ static final List<GetPage> pages=[
   GetPage(name: AppRoutes.manageProducts, page: () => AdminProductManagement()),
   GetPage(name: AppRoutes.camps, page: () => CampsPage()),
   GetPage(name: AppRoutes.profile, page: () => ProfileScreen()),
- 
-];
+  // GetPage(name: AppRoutes.settingsScreen, page: ()=> Setting())
+ ];
 }

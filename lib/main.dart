@@ -5,11 +5,20 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rns_herbals_app/Screens/app_routes.dart';
 import 'package:get/get.dart';
+// import 'package:rns_herbals_app/settings/settings_controller.dart';
+import 'package:flutter/services.dart';
+
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flex_color_scheme/flex_color_scheme.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
 
+// import 'settings/settings_controller.dart';
+// import 'settings/settings_screen.dart';
+// import 'l10n/app_localizations.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -42,6 +51,7 @@ Future<void> _showLocalNotification(RemoteMessage message) async {
 
 Future<void> setupFCM() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+
 
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
@@ -91,7 +101,10 @@ Future<void> setupFCM() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
- 
+ await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]); 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
 
@@ -107,6 +120,8 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   setupFCM();
+  /// 🔥 ADD THIS
+  // Get.put(SettingsController());
 
   runApp(const GynacologistApp());
 }
@@ -127,12 +142,82 @@ class _GynacologistAppState extends State<GynacologistApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'RNS App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: AppRoutes.splash,
-      getPages: AppRoutes.pages,
+    return ScrollConfiguration(
+      // behavior: const NoStretchScrollBehavior(),
+      behavior: const ScrollBehavior().copyWith(overscroll: false),
+      
+      child: GetMaterialApp(
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+    overscroll: false,
+  ),
+        debugShowCheckedModeBanner: false,
+        title: 'RNS App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue,
+          ),
+        ),
+        initialRoute: AppRoutes.splash,
+        getPages: AppRoutes.pages,
+      ),
     );
+  }
+//   @override
+// Widget build(BuildContext context) {
+//   final settings = Get.find<SettingsController>();
+
+//   return Obx(() {
+//     return ScrollConfiguration(
+//       behavior: const ScrollBehavior().copyWith(overscroll: false),
+//       child: GetMaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         title: 'RNS App',
+
+//         /// 🌗 THEMES (FlexColorScheme)
+//         theme: FlexThemeData.light(
+//           scheme: FlexScheme.blue,
+//           useMaterial3: true,
+//         ),
+//         darkTheme: FlexThemeData.dark(
+//           scheme: FlexScheme.blue,
+//           useMaterial3: true,
+//         ),
+//         themeMode:
+//             settings.isDark.value ? ThemeMode.dark : ThemeMode.light,
+
+//         /// 🌍 LANGUAGE
+//         locale: settings.locale.value,
+//         supportedLocales: const [
+//           Locale('en'),
+//           Locale('hi'),
+//           Locale('mr'),
+//         ],
+//         localizationsDelegates:  [
+//           // GlobalMaterialLocalizations.delegate,
+//           // GlobalWidgetsLocalizations.delegate,
+//           // GlobalCupertinoLocalizations.delegate,
+//         ],
+
+//         initialRoute: AppRoutes.splash,
+//         getPages: AppRoutes.pages,
+//       ),
+//     );
+//   });
+// }
+
+}
+
+
+class NoStretchScrollBehavior extends ScrollBehavior {
+  const NoStretchScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    // 👇 This removes BOTH glow & stretch overscroll
+    return child;
   }
 }

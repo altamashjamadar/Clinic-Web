@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:rns_herbals_app/Screens/signup.dart';
 import 'package:rns_herbals_app/model/form_field_model.dart';
 import 'package:rns_herbals_app/widgets/custom_text_field.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
+  
       User? user = userCredential.user; 
       if (user == null) {
         throw Exception('Authentication failed: User is null');
@@ -41,16 +42,41 @@ class _LoginScreenState extends State<LoginScreen> {
       print('Authenticated user UID: ${user.uid}');
 
 
+      // DocumentSnapshot userDoc = await _firestore
+      //     .collection('users')
+      //     .doc(user.uid)
+      //     .get();
       DocumentSnapshot userDoc = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      if (!userDoc.exists) {
-        throw Exception('User document not found for UID: ${user.uid}. Contact admin.');
-      }
+    .collection('users')
+    .doc(user.uid)
+    .get();
 
+if (!userDoc.exists) {
+  throw Exception('User document not found for UID: ${user.uid}');
+}
 
-      String role = userDoc['role'] as String? ?? 'user';
+// 🔥 FETCH USER NAME
+final String userName =
+    (userDoc.data() as Map<String, dynamic>)['name'] ??
+    (userDoc.data() as Map<String, dynamic>)['fullName'] ??
+    'User';
+
+final String role = userDoc['role'] as String? ?? 'user';
+
+      // if (!userDoc.exists) {
+      //   throw Exception('User document not found for UID: ${user.uid}. Contact admin.');
+      // }
+
+final token = await FirebaseMessaging.instance.getToken();
+
+await FirebaseFirestore.instance
+  .collection('users')
+  .doc(user.uid)
+  .set({
+    'fcmToken': token,
+  }, SetOptions(merge: true));
+
+      // String role = userDoc['role'] as String? ?? 'user';
       print('User role: $role'); 
 
       switch (role) {
@@ -73,17 +99,26 @@ class _LoginScreenState extends State<LoginScreen> {
             behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 5)
             ),
+            // SnackBar(
+  // content: Text('Welcome, $userName '),
+  // backgroundColor: Colors.green,
+  // behavior: SnackBarBehavior.floating,
+  // duration: const Duration(seconds: 4),
+// ),
+
           );
           Get.offAllNamed('/doctor');
           break;
         default:
         
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:  const Text('Welcome, User!'),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 5)
-            ),
+           SnackBar(
+  content: Text('Welcome, $userName 👋'),
+  backgroundColor: Colors.green,
+  behavior: SnackBarBehavior.floating,
+  duration: const Duration(seconds: 4),
+),
+
           );
           Get.offAllNamed('/home');
           
@@ -113,7 +148,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white),
+      appBar: AppBar(//backgroundColor: Colors.white
+      title: const Text('Login',style: TextStyle(color: Colors.white),
+    
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.blue  ,
+      foregroundColor: Colors.white,
+      // title: 
+      ),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Container(

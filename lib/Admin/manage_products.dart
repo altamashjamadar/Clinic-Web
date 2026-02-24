@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +23,7 @@ class _AdminProductManagementState extends State<AdminProductManagement> {
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
   bool _uploading = false;
+  
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -33,76 +33,19 @@ class _AdminProductManagementState extends State<AdminProductManagement> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Manage Products'),
+        centerTitle: true,
          backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+      ),
+       floatingActionButton: FloatingActionButton(
+        onPressed: _showAddProductDialog,
+        // onPressed: (){},
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Column(
         children: [
          
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-               CustomTextField(
-                  controller: _nameController, model: FormFieldModel(label: "Name",required: true, hint: "Enter product name"),
-                  
-                ),
-               
-                const SizedBox(height: 10),
-                
-               
-                CustomTextField(
-                  controller: _descController, model: FormFieldModel(label: "Description", hint: "Enter product description", maxLines: 2),
-                ),
-                const SizedBox(height: 10),
-
-                CustomTextField(
-                  controller: _priceController, model: FormFieldModel(label: "Price (INR)",required: true, hint: "Enter product price", keyboardType: TextInputType.number),
-                ),
-                const SizedBox(height: 10),
-
-                
-                CustomTextField(
-                  controller: _stockController, model: FormFieldModel(label: "Available Stock (quantity)",required: true, hint: "Enter available stock", keyboardType: TextInputType.number),
-                ),
-                const SizedBox(height: 12),
-
-                
-                Row(
-                  children: [
-                    Expanded(
-                      child: _selectedImage == null
-                          ? const Text('No image selected')
-                          : Text('Selected: ${_selectedImage!.path.split('/').last}'),
-                    ),
-                    ElevatedButton.icon(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.blue),
-                      ),
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.photo, color: Colors.white,),
-                      label: const Text('Pick Image',style: TextStyle(color: Colors.white),),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                ElevatedButton(
-                  onPressed: _uploading ? null : _addProduct,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  ),
-                  child: _uploading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Add Product',style: TextStyle(color: Colors.white),),
-                ),
-              ],
-            ),
-          ),
 
           const Divider(height: 1),
 
@@ -119,78 +62,137 @@ class _AdminProductManagementState extends State<AdminProductManagement> {
                 }
 
                 final docs = snapshot.data!.docs;
-                if (docs.isEmpty) {
-                  return const Center(child: Text('No products yet'));
-                }
-
+                // if (docs.isEmpty) {
+                //   return const Center(child: Text('No products yet'));
+                // }
+                 if (docs.isEmpty) {
+            return const Center(
+              child: Text('No products yet\nTap + to add',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.grey)),
+            );
+          }
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  itemCount: docs.length,
-                  itemBuilder: (context, i) {
-                    final doc = docs[i];
-                    final data = doc.data() as Map<String, dynamic>;
-                    final docId = doc.id;
+                  
+  padding: const EdgeInsets.all(12),
+  itemCount: docs.length,
+  physics: const ClampingScrollPhysics(),
+  itemBuilder: (context, i) {
+    final doc = docs[i];
+    final data = doc.data() as Map<String, dynamic>;
 
-                    final imageUrl = (data['imageUrl'] as String?) ?? '';
-                    final name = (data['name'] as String?) ?? '';
-                    final price = (data['price'] ?? 0).toString();
-                    final qty = (data['quantity'] ?? data['stock'] ?? 0).toString();
+    final imageUrl = data['imageUrl'] ?? '';
+    final name = data['name'] ?? '';
+    final price = data['price'] ?? 0;
+    final stock = data['quantity'] ?? 0;
 
-                    return Card(
-                      color: Colors.white,
-                      shadowColor: Colors.grey.shade200,
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                      child: ListTile(
-                        
-                        leading: imageUrl.isNotEmpty
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  imageUrl,
-                                  width: 56,
-                                  height: 56,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-                                ),
-                              )
-                            : Container(
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade200,
-                                ),
-                                child: const Icon(Icons.image, color: Colors.grey),
-                              ),
-                        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 4),
-                            Text('Price: ₹$price'),
-                            const SizedBox(height: 2),
-                            Text('Available stock: $qty'),
-                          ],
+    return Card(
+      color: Colors.white,
+      shadowColor: Colors.grey,
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ---------------- IMAGE ----------------
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.broken_image),
+                    )
+                  : Container(
+                      width: 70,
+                      height: 70,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image),
+                    ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Stock: $stock quantity',
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Price: ₹$price',
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        label: const Text(
+                          'Remove',
+                          style: TextStyle(color: Colors.red),
                         ),
-                        isThreeLine: true,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => _showEditDialog(doc),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteProduct(docId),
-                            ),
-                          ],
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red),
                         ),
+                        onPressed: () =>
+                            _deleteProduct(doc.id),
                       ),
-                    );
-                  },
-                );
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        
+                        icon: const Icon(Icons.edit),
+                        label: const Text('Edit'),
+
+                        style: ElevatedButton.styleFrom(
+                          
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () =>
+                            _showEditDialog(doc),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
+
+              
               },
             ),
           ),
@@ -210,6 +212,140 @@ class _AdminProductManagementState extends State<AdminProductManagement> {
       setState(() => _selectedImage = File(picked.path));
     }
   }
+void _showAddProductDialog() {
+  _clearForm();
+
+  Get.dialog(
+    StatefulBuilder(
+      builder: (context, setDialogState) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Add Product'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  controller: _nameController,
+                  model: FormFieldModel(
+                    label: "Name",
+                    required: true,
+                    hint: "Enter product name",
+                  ),
+                  showClearButton: false,
+                ),
+                const SizedBox(height: 10),
+
+                CustomTextField(
+                  controller: _descController,
+                  model: FormFieldModel(
+                    label: "Description",
+                    hint: "Enter product description",
+                    maxLines: 2,
+                  ),
+                  showClearButton: false,
+                ),
+                const SizedBox(height: 10),
+
+                CustomTextField(
+                  controller: _priceController,
+                  model: FormFieldModel(
+                    label: "Price (INR)",
+                    required: true,
+                    hint: "Enter product price",
+                    keyboardType: TextInputType.number,
+                  ),
+                  showClearButton: false,
+                ),
+                const SizedBox(height: 10),
+
+                CustomTextField(
+                  controller: _stockController,
+                  model: FormFieldModel(
+                    label: "Available Stock",
+                    required: true,
+                    hint: "Enter available stock",
+                    keyboardType: TextInputType.number,
+                  ),
+                  showClearButton: false,
+                ),
+                const SizedBox(height: 12),
+
+                /// IMAGE PICKER ROW
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedImage == null
+                            ? 'No image selected'
+                            : _selectedImage!.path.split('/').last,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {
+                        final XFile? picked =
+                            await _picker.pickImage(
+                          source: ImageSource.gallery,
+                          maxWidth: 1200,
+                          imageQuality: 85,
+                        );
+
+                        if (picked != null) {
+                          _selectedImage = File(picked.path);
+                          setDialogState(() {}); // 🔥 THIS IS THE FIX
+                        }
+                      },
+                      icon: const Icon(Icons.photo, color: Colors.blue),
+                      label: const Text(
+                        'Pick Image',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: _uploading
+                  ? null
+                  : () async {
+                      await _addProduct();
+                      if (Get.isDialogOpen ?? false) Get.back();
+                    },
+              child: _uploading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Add'),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
 
   Future<void> _addProduct() async {
     final name = _nameController.text.trim();

@@ -107,7 +107,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 title: const Text('Add News'),
                 onTap: () {
                   Navigator.pop(context);
-                  Get.to(ManageNews());
+                  // Get.to(ManageNews());
+                  Get.to(() => ManageNews());
                 },
               ),
               ListTile(
@@ -136,6 +137,40 @@ class _DrawerScreenState extends State<DrawerScreen> {
               ),
            
             
+            ]else if(user?.email == 'doctor@gmail.com')...[
+               ListTile(
+                leading: const Icon(Icons.schedule, color: Colors.blue),
+                title: const Text('Appointments'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.toNamed('/admin-appointments');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.article, color: Colors.blue),
+                title: const Text('Add News'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Get.to(ManageNews());
+                  Get.to(() => ManageNews());
+                },
+              ),
+                ListTile(
+                leading: const Icon(Icons.local_hospital, color: Colors.blue),
+                title: const Text('Create Camps'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Get.toNamed('/manage-camps');
+                },
+              ),
+              // ListTile(
+              //   leading: Icon(Icons.person),
+              //   title: const Text("Profile"),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     Get.toNamed('/profile');
+              //   },
+              // )
             ]else ...[
             ListTile(
               leading: const Icon(Icons.home_outlined, color: Colors.blue),
@@ -165,21 +200,24 @@ class _DrawerScreenState extends State<DrawerScreen> {
               },
             ),
               ListTile(
-              leading: const Icon(Icons.production_quantity_limits, color: Colors.blue),
+              leading: const Icon(Icons.shopping_cart, color: Colors.blue),
               title: const Text('Products'),
               onTap: () {
                 Navigator.pop(context);
                 Get.toNamed('/product');
               },
               ),
-            ListTile(
-              leading: const Icon(Icons.chat_outlined, color: Colors.blue),
-              title: const Text('Chatbot'),
-              onTap: () {
-                Navigator.pop(context);
-                Get.toNamed('/chatbot');
-              },
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.settings, color: Colors.blue),
+            //   title: const Text('settings'),
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     // Get.toNamed('/chatbot');
+            //     // Get.to('/settingsScreen')
+            //     Get.to(Settings());
+
+            //   },
+            // ),
             ListTile(
               leading: const Icon(Icons.article_outlined, color: Colors.blue),
               title: const Text('News'),

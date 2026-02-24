@@ -65,6 +65,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody() {
     return SingleChildScrollView(
+      // physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     'RNS HealthCare provides comprehensive gynaecological care with modern facilities. Our team of experts offers services from prenatal care to wellness screenings.',
                     style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     
                   ),
                 ],
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
 
           const SizedBox(height: 30),
 
-          // Gallery
+  
           const Text('Clinic Gallery', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           GridView.count(
@@ -129,13 +130,17 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Login Required'),
           content: const Text('Please log in to view your notifications.'),
           actions: [
-            TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+            TextButton(onPressed: () => Get.back(), child: const Text('Cancel', style: TextStyle(color: Colors.blue)),),
             ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white
+            ),
               onPressed: () {
                 Get.back();
                 Get.to(() => const LoginScreen());
               },
-              child: const Text('Login'),
+              child: const Text('Login', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -145,6 +150,7 @@ class _HomePageState extends State<HomePage> {
 
     Get.dialog(
       Dialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -157,8 +163,9 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
-                      .collection('notifications')
-                      .where('userId', isEqualTo: user.uid)
+                   .collection('notifications')
+.where('userId', whereIn: [user.uid, 'all'])
+
                       .orderBy('timestamp', descending: true)
                       .limit(20)
                       .snapshots(),
@@ -183,10 +190,15 @@ class _HomePageState extends State<HomePage> {
                             : 'Unknown';
                         return Card(
                           child: ListTile(
-                            leading: Icon(
-                              data['type'] == 'appointment' ? Icons.schedule : Icons.event,
-                              color: Colors.blue,
-                            ),
+                           leading: Icon(
+  data['type'] == 'appointment'
+      ? Icons.schedule
+      : data['type'] == 'camp'
+          ? Icons.event_note
+          : Icons.notifications,
+  color: Colors.blue,
+),
+
                             title: Text(data['title'] ?? 'Notification'),
                             subtitle: Text('${data['body'] ?? ''}\n$date'),
                           ),
@@ -196,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
-              TextButton(onPressed: () => Get.back(), child: const Text('Close')),
+              TextButton(onPressed: () => Get.back(), child: const Text('Close', style: TextStyle(color: Colors.blue)),),
             ],
           ),
         ),

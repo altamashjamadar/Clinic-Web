@@ -63,15 +63,18 @@ class CartScreen extends StatelessWidget {
       return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Your Cart3', style: TextStyle(color: Colors.white)),
+          title: const Text('Your Cart', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.blue,
           centerTitle: true,
           foregroundColor: Colors.white,
         ),
         body: Center(
           child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.blue),
+            ),
             onPressed: () => Get.to(() => const LoginScreen()),
-            child: const Text('Login to view cart'),
+            child: const Text('Login to view cart',style: TextStyle(color: Colors.white),),
           ),
         ),
       );

@@ -170,6 +170,7 @@ Future<void> _addToCart(Map<String, dynamic> product) async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Products',style: TextStyle(color: Colors.white),),
         centerTitle:true,
@@ -184,8 +185,35 @@ Future<void> _addToCart(Map<String, dynamic> product) async {
           ),
         ],
       ),
-      body: ListView.builder(
-        
+      body: filtered.isEmpty
+    ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(
+              Icons.inventory_2_outlined,
+              size: 80,
+              color: Colors.grey,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'No products available',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Please check back later',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      )
+    : ListView.builder(
+        physics: const ClampingScrollPhysics(),
         itemCount: filtered.length,
         itemBuilder: (context, i) {
           final p = filtered[i];
@@ -194,27 +222,74 @@ Future<void> _addToCart(Map<String, dynamic> product) async {
           return Card(
             color: Colors.white,
             child: ListTile(
-              leading: p['imageUrl'] != null ? Image.network(p['imageUrl'], width: 60, height: 60, fit: BoxFit.cover) : const Icon(Icons.image),
-              title: Text(p['name']),
+              leading: p['imageUrl'] != null && p['imageUrl'].toString().isNotEmpty
+                  ? Image.network(
+                      p['imageUrl'],
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                    )
+                  : const Icon(Icons.image, size: 40),
+              title: Text(p['name'] ?? ''),
               subtitle: Column(
-                mainAxisSize: MainAxisSize.min, 
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('₹${p['price']}'),
-                  Text('Stock: ${p['quantity'] ?? 0}', style: TextStyle(color: inStock ? Colors.green : Colors.red)),
+                  Text(
+                    'Stock: ${p['quantity'] ?? 0}',
+                    style: TextStyle(
+                      color: inStock ? Colors.green : Colors.red,
+                    ),
+                  ),
                 ],
               ),
               trailing: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(inStock ? Colors.blue : Colors.grey),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: inStock ? Colors.blue : Colors.grey,
                 ),
                 onPressed: inStock ? () => _addToCart(p) : null,
-                child: Text(inStock ? 'Add' : 'Out of Stock',style: TextStyle(color: Colors.white),),
+                child: Text(
+                  inStock ? 'Add' : 'Out of Stock',
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
           );
         },
       ),
+
+      // body: ListView.builder(
+      //   physics: const ClampingScrollPhysics(),
+      //   itemCount: filtered.length,
+      //   itemBuilder: (context, i) {
+      //     final p = filtered[i];
+      //     final inStock = (p['quantity'] ?? 0) > 0;
+
+      //     return Card(
+      //       color: Colors.white,
+      //       child: ListTile(
+      //         leading: p['imageUrl'] != null ? Image.network(p['imageUrl'], width: 60, height: 60, fit: BoxFit.cover) : const Icon(Icons.image),
+      //         title: Text(p['name']),
+      //         subtitle: Column(
+      //           mainAxisSize: MainAxisSize.min, 
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           children: [
+      //             Text('₹${p['price']}'),
+      //             Text('Stock: ${p['quantity'] ?? 0}', style: TextStyle(color: inStock ? Colors.green : Colors.red)),
+      //           ],
+      //         ),
+      //         trailing: ElevatedButton(
+      //           style: ButtonStyle(
+      //             backgroundColor: MaterialStateProperty.all(inStock ? Colors.blue : Colors.grey),
+      //           ),
+      //           onPressed: inStock ? () => _addToCart(p) : null,
+      //           child: Text(inStock ? 'Add' : 'Out of Stock',style: TextStyle(color: Colors.white),),
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ),
     );
   }
 }

@@ -18,7 +18,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       image: 'assets/images/slide1.png',
       title: "Welcome to RNS HealthCare",
       description:
-          "Your trusted partner for women’s health and gynaecological care.",
+          "Your trusted partner for women's health and gynaecological care.",
     ),
     SlideModel(
       image: 'assets/images/slide2.png',

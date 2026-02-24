@@ -34,7 +34,7 @@ class _ManageOrdersState extends State<ManageOrders> {
         children: [
           // Search Bar
           Padding(
-          
+          // when rthe order is marked as cancelled it should update the stock of the products in the order
             padding: 
             const EdgeInsets.all(12),
             child: TextField(
@@ -91,6 +91,7 @@ class _ManageOrdersState extends State<ManageOrders> {
                     final orderDoc = orders[index];
                     final data = orderDoc.data() as Map<String, dynamic>;
                     final orderId = orderDoc.id;
+                                    final isCancelled = data['status'] == 'cancelled';
 
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -146,19 +147,67 @@ class _ManageOrdersState extends State<ManageOrders> {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-
                                 Row(
                                   children: [
                                     const Text('Status: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    DropdownButton<String>(
-                                      value: data['status'] ?? 'pending',
-                                      items: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
-                                          .map((s) => DropdownMenuItem(value: s, child: Text(s.capitalizeFirst!)))
-                                          .toList(),
-                                      onChanged: (newStatus) => _updateStatus(orderDoc.reference, newStatus),
-                                    ),
+
+DropdownButton<String>(
+  value: data['status'] ?? 'pending',
+  items: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+      .map((s) => DropdownMenuItem(
+            value: s,
+            child: Text(s.capitalizeFirst!),
+          ))
+      .toList(),
+  onChanged: isCancelled
+      ? null // 🔒 Disable dropdown
+      : (newStatus) async {
+          if (newStatus == null) return;
+
+          if (newStatus == 'cancelled') {
+            await _cancelOrderWithStockRestore(orderDoc.reference, data);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Order cancelled & stock restored'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else {
+            await _updateStatus(orderDoc.reference, newStatus);
+          }
+        },
+),
+if (isCancelled)
+  const Text(
+    'This order is cancelled ',
+    style: TextStyle(color: Colors.red, fontSize: 12),
+  ),
+
+
+                                    // DropdownButton<String>(
+                                    //   value: data['status'] ?? 'pending',
+                                    //   items: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+                                    //       .map((s) => DropdownMenuItem(value: s, child: Text(s.capitalizeFirst!)))
+                                    //       .toList(),
+                                    //   onChanged: (newStatus) async {
+                                        // if (newStatus == 'cancelled' && data['status'] != 'cancelled') {
+                                        //   // Restore stock for all items in the order
+                                        //   final items = data['items'] as List<dynamic>? ?? [];
+                                        //   for (var item in items) {
+                                        //     final productRef = FirebaseFirestore.instance.collection('products').doc(item['productId']);
+                                        //     // 
+                                        //     //await _updateStock(productRef, item['quantity']);
+                                        //     await _restoreStockTransactional(items);
+
+                                        //   }
+                                        // }
+                                        // await _updateStatus(orderDoc.reference, newStatus);
+                                      // },
+                                    // ),/
                                   ],
                                 ),
+                                   
                               ],
                             ),
                           ),
@@ -174,6 +223,44 @@ class _ManageOrdersState extends State<ManageOrders> {
       ),
     );
   }
+
+
+Future<void> _cancelOrderWithStockRestore(
+  DocumentReference orderRef,
+  Map<String, dynamic> orderData,
+) async {
+  final firestore = FirebaseFirestore.instance;
+
+  await firestore.runTransaction((transaction) async {
+    final orderSnap = await transaction.get(orderRef);
+    final currentStatus = orderSnap['status'];
+
+    // 🔒 Prevent double cancel or updates
+    if (currentStatus == 'cancelled') {
+      throw Exception('Order already cancelled');
+    }
+
+    final items = orderData['items'] as List<dynamic>? ?? [];
+
+    // ✅ Restore stock
+    for (final item in items) {
+      final productRef =
+          firestore.collection('products').doc(item['productId']);
+      final productSnap = await transaction.get(productRef);
+
+      final currentStock = productSnap['quantity'] ?? 0;
+      transaction.update(productRef, {
+        'quantity': currentStock + (item['quantity'] as int),
+      });
+    }
+
+    // ✅ Update order status
+    transaction.update(orderRef, {
+      'status': 'cancelled',
+      'cancelledAt': FieldValue.serverTimestamp(),
+    });
+  });
+}
 
   void _showFilterDialog() {
     Get.bottomSheet(
@@ -197,8 +284,29 @@ class _ManageOrdersState extends State<ManageOrders> {
           ],
         ),
       ),
+
     );
   }
+Future<void> _updateStock(DocumentReference productRef, int quantity) async {
+    final productSnap = await productRef.get();
+    if (productSnap.exists) {
+      final data = productSnap.data() as Map<String, dynamic>;
+      final currentStock = data['stock'] ?? 0;
+      await productRef.update({'stock': currentStock + quantity});
+    }
+  }
+  Future<void> _restoreStockTransactional(List items) async {
+  final firestore = FirebaseFirestore.instance;
+  await firestore.runTransaction((transaction) async {
+    for (var item in items) {
+      final ref = firestore.collection('products').doc(item['productId']);
+      final snap = await transaction.get(ref);
+      final currentStock = snap['stock'] ?? 0;
+      transaction.update(ref, {'stock': currentStock + item['quantity']});
+    }
+  });
+}
+
 
   Future<void> _updateStatus(DocumentReference ref, String? newStatus) async {
     if (newStatus == null) return;

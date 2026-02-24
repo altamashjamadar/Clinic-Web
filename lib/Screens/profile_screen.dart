@@ -44,8 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final doc = await _firestore.collection('users').doc(_user!.uid).get();
     if (doc.exists) {
       final data = doc.data()!;
-      _nameController.text = data['name'] ?? '';
-      _phoneController.text = data['phone'] ?? '';
+      _nameController.text = data['fullName'] ?? '';
+      _phoneController.text = data['phoneNumber'] ?? '';
       _addressController.text = data['address'] ?? '';
       _selectedGender = data['gender'];
       _profileImageUrl = data['profileImage'];
@@ -219,8 +219,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               _buildGenderDropdown(enabled: !isGuest),
               const SizedBox(height: 12),
-              
-              CustomTextField(model: FormFieldModel(label: "Email", hint: "Enter email",prefixIcon: Icons.mail), controller: TextEditingController(text: _user?.email ?? 'guest@example.com', ), ),
+            // email id should not be editable
+              _buildTextField(null, 'Email', Icons.email,
+                  initialValue: _user?.email ?? 'Guest', enabled: false),
+         
+            
               const SizedBox(height: 12),
              
               CustomTextField(model: FormFieldModel(label: "Address", hint: "Enter address", prefixIcon: Icons.home, maxLines: 2
@@ -231,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               CustomTextField(model: FormFieldModel(label: "New Password (Optional)", hint: "Enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _passwordController),
               const SizedBox(height: 12),
             
-              CustomTextField(model: FormFieldModel(label: "Confirm Current Password", hint: "Re-enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _confirmPasswordController),
+              CustomTextField(model: FormFieldModel(label: "Confirm New Password", hint: "Re-enter new password",prefixIcon: Icons.lock, fieldType: FieldType.password,), controller: _confirmPasswordController),
               const SizedBox(height: 30),
 
               SizedBox(

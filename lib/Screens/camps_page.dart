@@ -43,6 +43,7 @@ class CampsPage extends StatelessWidget {
           }
 
           return ListView.builder(
+            physics: const ClampingScrollPhysics(),
             padding: const EdgeInsets.all(12),
             itemCount: camps.length,
             itemBuilder: (context, i) {
@@ -55,12 +56,13 @@ class CampsPage extends StatelessWidget {
                     backgroundColor: Colors.red,
                     child: Icon(Icons.location_on, color: Colors.white),
                   ),
-                  title: Text('${data['date']} at ${data['time']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  // title: Text('${data['date']} at ${data['time']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                     title: Text('${data['startdate']} to ${data['enddate']} \n${data['starttime']} - ${data['endtime']}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(data['address'], style: const TextStyle(fontWeight: FontWeight.w500)),
-                      if (data['description']?.isNotEmpty == true)
+                      if (data['descrsiption']?.isNotEmpty == true)
                         Text(data['description'], style: const TextStyle(color: Colors.black87)),
                     ],
                   ),

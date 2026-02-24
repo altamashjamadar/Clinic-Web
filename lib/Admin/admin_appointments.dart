@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get/get.dart';
-import 'package:rns_herbals_app/Screens/drawer_screen.dart';
+// import 'package:get/get.dart';
+// import 'package:rns_herbals_app/Screens/drawer_screen.dart';
+import 'package:rns_herbals_app/model/form_field_model.dart';
+import 'package:rns_herbals_app/widgets/custom_text_field.dart';
 
 class AdminAppointments extends StatefulWidget {
   const AdminAppointments({super.key});
@@ -27,6 +29,8 @@ await FirebaseFirestore.instance.collection('notifications').add({
   'body': 'Your appointment for ${data['issue'] ?? 'consultation'}'
       '${data['date'] != null ? ' on ${data['date'].toDate()}' : ''}'
       '${data['timeSlot'] != null ? ' at ${data['timeSlot']}' : ''} is confirmed.',
+      'Last Menses: ${data['lastMensesDate'] != null ? data['lastMensesDate'].toDate() : 'N/A'}'
+      // ' | Cycle Length: ${data['cycleLength'] ?? 'N/A'} days'
   'type': 'appointment',
   'timestamp': FieldValue.serverTimestamp(),
 });
@@ -70,6 +74,8 @@ await FirebaseFirestore.instance.collection('notifications').add({
         'userId': data['userId'] ?? 'guest',
         'title': 'Appointment Rejected',
         'body': 'Your appointment was rejected: $note',
+        'Last Menses: ${data['lastMensesDate'] != null ? data['lastMensesDate'].toDate() : 'N/A'}'
+        // ' | Cycle Length: ${data['cycleLength'] ?? 'N/A'} days' 
         'type': 'appointment',
         'timestamp': FieldValue.serverTimestamp(),
       });
@@ -88,38 +94,44 @@ await FirebaseFirestore.instance.collection('notifications').add({
   }
 
   Future<String?> _showNoteDialog(BuildContext context) async {
-    String? note;
+    final TextEditingController noteController = TextEditingController();
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text('Reject Reason *'),
-        content: TextField(
-          onChanged: (value) => note = value,
-          decoration: const InputDecoration(labelText: 'Mandatory Description'),
-          maxLines: 3,
-        ),
+        content: CustomTextField(model: FormFieldModel(label: "Mandatory Description", hint: "Enter description"), controller: noteController,maxLines: 3,),
+        // TextField(
+        //   controller: noteController,
+        //   decoration: const InputDecoration(
+        //     labelText: 'Mandatory Description',
+        //     border: OutlineInputBorder(),
+        //   ),
+        //   maxLines: 3,
+        // ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancel',  style: TextStyle(color: Colors.blue),),
           ),
           TextButton(
             onPressed: () {
-              if (note != null && note!.isNotEmpty) Navigator.pop(context, note);
-              else  ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                // 'Error',
-                // Content : Text('Reason is required'),
-                content: const Text('Reason is required'),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.red,
-                // colorText: Colors.white,
-                margin: const EdgeInsets.all(10),
-                duration: const Duration(seconds: 3),
-               )
+              final note = noteController.text;
+              if (note.isNotEmpty) {
+                Navigator.pop(context, note);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Reason is required'),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.red,
+                    margin: const EdgeInsets.all(10),
+                    duration: const Duration(seconds: 3),
+                  ),
                 );
+              }
             },
-            child: const Text('Reject'),
+            child: const Text('Reject',style: TextStyle(color: Colors.blue),),
           ),
         ],
       ),
@@ -182,11 +194,17 @@ await FirebaseFirestore.instance.collection('notifications').add({
                       child: ListTile(
                         title: Text(data['name'] ?? 'Unknown'),
                         
-subtitle: Text(
-  'Date: ${data['date']?.toDate()?.toString() ?? 'Not specified'}\n'  // Null safe access
-  'Time: ${data['timeSlot'] ?? 'Not specified'}\n'
-  'Issue: ${data['issue'] ?? ''}\n'
-  'Note: ${data['adminNote'] ?? ''}',
+subtitle: Column(
+  mainAxisAlignment: MainAxisAlignment.start,
+  children: [
+    Text(
+      'Date: ${data['date']?.toDate()?.toString() ?? 'Not specified'}\n'  // Null safe access
+      'Time: ${data['timeSlot'] ?? 'Not specified'}\n'
+      'Issue: ${data['issue'] ?? ''}\n'
+      'Last Menses: ${data['lastMensesDate'] != null ? data['lastMensesDate'].toDate() : 'N/A'}\n'
+      'Note: ${data['adminNote'] ?? ''}',
+    ),
+  ],
 ),
                         trailing: _selectedStatus.toLowerCase() == 'pending'
                             ? Row(
