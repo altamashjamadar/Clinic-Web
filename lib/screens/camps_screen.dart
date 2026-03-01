@@ -1,0 +1,85 @@
+import 'package:clinic_web/widgets/Responsive_Wrapper.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class CampsPage extends StatelessWidget {
+  const CampsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: const Text('Upcoming Camps'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('camps')
+            .where('status', isEqualTo: 'active')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final camps = snapshot.data?.docs ?? [];
+          if (camps.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.event_busy, size: 80, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text('No active camps', style: TextStyle(fontSize: 18)),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            physics: const ClampingScrollPhysics(),
+            padding: const EdgeInsets.all(12),
+            itemCount: camps.length,
+            itemBuilder: (context, i) {
+              final data = camps[i].data() as Map<String, dynamic>;
+              return ResponsiveWrapper(
+                child: SafeArea(
+                  child: Center(
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          backgroundColor: Colors.red,
+                          child: Icon(Icons.location_on, color: Colors.white),
+                        ),
+                        // title: Text('${data['date']} at ${data['time']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                           title: Text('${data['startdate']} to ${data['enddate']} \n${data['starttime']} - ${data['endtime']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(data['address'], style: const TextStyle(fontWeight: FontWeight.w500)),
+                            if (data['descrsiption']?.isNotEmpty == true)
+                              Text(data['description'], style: const TextStyle(color: Colors.black87)),
+                          ],
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
